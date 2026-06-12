@@ -1,0 +1,6 @@
+{
+  "name": "Portal ASSEBGUIM Central",
+  "description": "Portal de Apoio Estudantil, Censo e Mapeamento para a Associação de Estudantes da Guiné-Bissau em Marrocos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

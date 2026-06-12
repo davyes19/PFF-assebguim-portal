@@ -1,0 +1,81 @@
+import 'dotenv/config';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || '';
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
+
+export interface Student {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  city: string;
+  university: string;
+  course: string;
+  degree: string;
+  scholarshipType: string;
+  residencyStatus: string;
+  arrivalYear: string;
+  gender: string;
+  passportNumber: string;
+  passportExpiry: string;
+  residenceCardNumber: string;
+  residenceCardExpiry: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  category: string;
+  description: string;
+  studentName: string;
+  email: string;
+  status: 'Pendente' | 'Em Resolução' | 'Resolvido';
+  createdAt: string;
+}
+
+class Database {
+  async getStudents(): Promise<Student[]> {
+    const { data, error } = await supabase.from('students').select('*');
+    if (error) throw new Error(error.message);
+    return data || [];
+  }
+
+  async addStudent(studentData: Omit<Student, 'id' | 'residencyStatus'>): Promise<Student> {
+    const newStudent: Student = {
+      ...studentData,
+      id: "std-" + Date.now(),
+      residencyStatus: "Validado"
+    };
+    const { data, error } = await supabase.from('students').insert([newStudent]).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async getTickets(): Promise<SupportTicket[]> {
+    const { data, error } = await supabase.from('tickets').select('*').order('createdAt', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data || [];
+  }
+
+  async addTicket(ticketData: Omit<SupportTicket, 'id' | 'status' | 'createdAt'>): Promise<SupportTicket> {
+    const newTicket: SupportTicket = {
+      ...ticketData,
+      id: "tk-" + Date.now(),
+      status: "Pendente",
+      createdAt: new Date().toISOString()
+    };
+    const { data, error } = await supabase.from('tickets').insert([newTicket]).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async updateTicketStatus(id: string, status: 'Pendente' | 'Em Resolução' | 'Resolvido'): Promise<SupportTicket | null> {
+    const { data, error } = await supabase.from('tickets').update({ status }).eq('id', id).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+}
+
+export const db = new Database();
