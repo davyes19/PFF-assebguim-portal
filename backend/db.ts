@@ -54,7 +54,7 @@ class Database {
   }
 
   async getTickets(): Promise<SupportTicket[]> {
-    const { data, error } = await supabase.from('tickets').select('*').order('createdAt', { ascending: false });
+    const { data, error } = await supabase.from('support_tickets').select('*').order('createdAt', { ascending: false });
     if (error) throw new Error(error.message);
     return data || [];
   }
@@ -66,13 +66,13 @@ class Database {
       status: "Pendente",
       createdAt: new Date().toISOString()
     };
-    const { data, error } = await supabase.from('tickets').insert([newTicket]).select().single();
+    const { data, error } = await supabase.from('support_tickets').insert([newTicket]).select().single();
     if (error) throw new Error(error.message);
     return data;
   }
 
   async updateTicketStatus(id: string, status: 'Pendente' | 'Em Resolução' | 'Resolvido'): Promise<SupportTicket | null> {
-    const { data, error } = await supabase.from('tickets').update({ status }).eq('id', id).select().single();
+    const { data, error } = await supabase.from('support_tickets').update({ status }).eq('id', id).select().single();
     if (error) throw new Error(error.message);
     return data;
   }
