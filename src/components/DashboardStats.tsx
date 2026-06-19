@@ -19,6 +19,7 @@ const COLORS = ["#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#6366f1"
 
 export default function DashboardStats({ students, tickets, onRefresh }: DashboardStatsProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterYear, setFilterYear] = useState<string>("All");
   const [showPassportInfo, setShowPassportInfo] = useState<Record<string, boolean>>({});
 
   const togglePassportDetails = (id: string) => {
@@ -61,10 +62,13 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
     value
   }));
 
-  // Search filter
+  // Unique arrival years for filter dropdown
+  const arrivalYears = Array.from(new Set(students.map(s => s.arrivalYear).filter(Boolean))).sort().reverse();
+
+  // Search and Year filter
   const filteredStudents = students.filter(s => {
     const query = searchQuery.toLowerCase();
-    return (
+    const matchesSearch = (
       s.fullName.toLowerCase().includes(query) ||
       s.city.toLowerCase().includes(query) ||
       s.university.toLowerCase().includes(query) ||
@@ -72,6 +76,9 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
       s.degree.toLowerCase().includes(query) ||
       s.passportNumber.toLowerCase().includes(query)
     );
+    const matchesYear = filterYear === "All" || s.arrivalYear === filterYear;
+    
+    return matchesSearch && matchesYear;
   });
 
   // Export to CSV helper - text generation
@@ -314,16 +321,28 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
             <p className="text-xs text-slate-500 mt-1">Affichage de {filteredStudents.length} sur {totalStudents} fiches actives.</p>
           </div>
 
-          {/* Search Box */}
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Filtrar par nom, filière, passeport..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
-            />
+          {/* Filters: Search Box and Year Dropdown */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Filtrar par nom, filière, passeport..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+              />
+            </div>
+            <select
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+              className="w-full sm:w-40 bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition cursor-pointer"
+            >
+              <option value="All">Toutes les années</option>
+              {arrivalYears.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
           </div>
         </div>
 
