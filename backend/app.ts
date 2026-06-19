@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "./db.js";
-import { GoogleGenAI } from "@google/genai";
+
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -45,26 +45,7 @@ app.post("/api/students", async (req, res) => {
       return res.status(400).json({ error: "Veuillez remplir tous les champs obligatoires du recensement académique." });
     }
 
-    // Check for duplicate passport or email to enforce one registration per person
-    const existingStudents = await db.getStudents();
-    const duplicatePassport = existingStudents.find(
-      (s) => s.passportNumber && s.passportNumber.trim().toUpperCase() === passportNumber.trim().toUpperCase()
-    );
-    const duplicateEmail = existingStudents.find(
-      (s) => s.email && s.email.trim().toLowerCase() === email.trim().toLowerCase()
-    );
 
-    if (duplicatePassport) {
-      return res.status(400).json({
-        error: `Cet étudiant est déjà enregistré. Le passeport numéro ${passportNumber.toUpperCase()} est associé à uma fiche active du recensement.`
-      });
-    }
-
-    if (duplicateEmail) {
-      return res.status(400).json({
-        error: `Cet étudiant est déjà enregistré. L'adresse email ${email.toLowerCase()} est déjà associée à uma fiche active du recensement.`
-      });
-    }
 
     const newStudent = await db.addStudent({
       fullName,
@@ -150,51 +131,6 @@ app.patch("/api/tickets/:id", async (req, res) => {
   }
 });
 
-// POST /api/ai-chat - Gemini integration for student support guide
-app.post("/api/ai-chat", async (req, res) => {
-  try {
-    const { prompt, history } = req.body;
 
-    if (!prompt) {
-      return res.status(400).json({ error: "La question ne peut pas être vide." });
-    }
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey || apiKey === "MY_GEMINI_API_KEY") {
-      return res.json({ 
-        text: "**[Mode Démo]** L'assistant IA est en mode test. Pour qu'il puisse répondre intelligemment em usando uma verdadeira inteligência artificial, configure sua chave de API."
-      });
-    }
-
-    const ai = new GoogleGenAI({
-      apiKey: apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
-    });
-
-    const systemInstruction = `
-Vous êtes l'"Assistant Guide d'Intégration au Maroc" officiel du Portal ASSEBGUIM Central.
-Votre objectif principal est d'aider les étudiants.
-Domaines principaux d'orientation: LOGEMENT & BAIL, CARTE DE SÉJOUR, ASSURANCE MALADIE, VIE ACADÉMIQUE.
-`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: prompt,
-      config: {
-        systemInstruction: systemInstruction,
-        temperature: 0.7,
-      }
-    });
-
-    res.json({ text: response.text });
-  } catch (e: any) {
-    console.error("Erro na comunicação com a IA:", e);
-    res.status(500).json({ error: "Incapaz de processar resposta da IA: " + e.message });
-  }
-});
 
 export default app;
