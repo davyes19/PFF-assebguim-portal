@@ -83,9 +83,9 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
 
   // Export to CSV helper - text generation
   const downloadCSV = () => {
-    const headers = ["ID", "Nom Complet", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Année Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
-    const rows = students.map(s => [
-      s.id,
+    const headers = ["N°", "Nom Complet", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Année Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
+    const rows = students.map((s, index) => [
+      (index + 1).toString(),
       s.fullName,
       s.email,
       s.phone,
