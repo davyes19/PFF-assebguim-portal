@@ -14,6 +14,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
   // Form State
   const [formData, setFormData] = useState({
     fullName: "",
+    birthDate: "",
     email: "",
     phone: "",
     arrivalYear: new Date().getFullYear().toString(),
@@ -56,6 +57,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     setError(null);
     if (step === 1) {
       if (!formData.fullName.trim()) return "Le Nom Complet est obligatoire.";
+      if (!formData.birthDate) return "La date de naissance est obligatoire.";
       if (!formData.email.trim() || !formData.email.includes("@")) return "Veuillez saisir une adresse email valide.";
       if (!formData.phone.trim()) return "Le téléphone est obligatoire.";
     } else if (step === 2) {
@@ -118,6 +120,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
   const handleReset = () => {
     setFormData({
       fullName: "",
+      birthDate: "",
       email: "",
       phone: "",
       arrivalYear: new Date().getFullYear().toString(),
@@ -253,6 +256,18 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   value={formData.fullName}
                   onChange={handleInputChange}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Date de Naissance *</label>
+                <input
+                  type="date"
+                  name="birthDate"
+                  required
+                  value={formData.birthDate}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
                 />
               </div>
 
