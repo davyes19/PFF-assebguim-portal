@@ -461,6 +461,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
         <div className="flex items-center justify-between border-t border-slate-200 pt-6 mt-4">
           {step > 1 ? (
             <button
+              key="btn-back"
               type="button"
               onClick={handleBack}
               className="flex items-center space-x-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer"
@@ -469,11 +470,12 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               <span>Retour</span>
             </button>
           ) : (
-            <div /> // Space keeper
+            <div key="btn-back-placeholder" /> // Space keeper
           )}
 
           {step < 3 ? (
             <button
+              key="btn-next"
               type="button"
               onClick={handleNext}
               className="flex items-center space-x-1.5 bg-yellow-500 hover:bg-yellow-400 text-slate-950 px-5 py-2.5 rounded-xl text-sm font-bold transition transform active:scale-95 cursor-pointer"
@@ -483,6 +485,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
             </button>
           ) : (
             <button
+              key="btn-submit"
               type="submit"
               disabled={loading}
               className="flex items-center space-x-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 px-6 py-3 rounded-xl text-sm font-bold transition transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md"
