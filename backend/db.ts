@@ -52,12 +52,11 @@ class Database {
   }
 
   async addStudent(studentData: Omit<Student, 'id' | 'residencyStatus'>): Promise<Student> {
-    const newStudent: Student = {
+    const payload = {
       ...studentData,
-      id: "std-" + Date.now(),
       residencyStatus: "Validado"
     };
-    const { data, error } = await supabase.from('students').insert([newStudent]).select().single();
+    const { data, error } = await supabase.from('students').insert([payload]).select().single();
     if (error) throw new Error(error.message);
     return data;
   }
@@ -69,13 +68,11 @@ class Database {
   }
 
   async addTicket(ticketData: Omit<SupportTicket, 'id' | 'status' | 'createdAt'>): Promise<SupportTicket> {
-    const newTicket: SupportTicket = {
+    const payload = {
       ...ticketData,
-      id: "tk-" + Date.now(),
-      status: "Pendente",
-      createdAt: new Date().toISOString()
+      status: "Pendente"
     };
-    const { data, error } = await supabase.from('support_tickets').insert([newTicket]).select().single();
+    const { data, error } = await supabase.from('support_tickets').insert([payload]).select().single();
     if (error) throw new Error(error.message);
     return data;
   }
