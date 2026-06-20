@@ -62,6 +62,18 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
     value
   }));
 
+  // Arrival Year stats
+  const arrivalYearCounts = students.reduce((acc, s) => {
+    if (!s.arrivalYear) return acc;
+    acc[s.arrivalYear] = (acc[s.arrivalYear] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const arrivalYearChartData = Object.entries(arrivalYearCounts).map(([name, value]) => ({
+    name,
+    Étudiants: value
+  })).sort((a,b) => parseInt(a.name) - parseInt(b.name));
+
   // Unique arrival years for filter dropdown
   const arrivalYears = Array.from(new Set(students.map(s => s.arrivalYear).filter(Boolean))).sort().reverse();
 
@@ -304,6 +316,28 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Chart 3: Arrival Year Distribution */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm lg:col-span-2">
+            <div className="border-b border-slate-200 pb-4 mb-4">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-blue-500" /> Évolution des Arrivées par Année
+              </h3>
+            </div>
+            <div className="h-72 w-full text-xs">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={arrivalYearChartData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                  <XAxis dataKey="name" stroke="#64748b" />
+                  <YAxis stroke="#64748b" allowDecimals={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: "#ffffff", borderColor: "#e2e8f0", color: "#1e293b" }} 
+                    cursor={{ fill: "rgba(226, 232, 240, 0.4)" }}
+                  />
+                  <Bar dataKey="Étudiants" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
