@@ -114,19 +114,19 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
     const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
     const rows = students.map((s, index) => [
       (index + 1).toString(),
-      s.fullName || "N/D",
+      (s.fullName || "").trim() || "N/D",
       s.birthDate ? formatDate(s.birthDate) : "N/D",
-      s.email || "N/D",
-      s.phone || "N/D",
-      s.city || "N/D",
-      s.university || "N/D",
-      s.course || "N/D",
-      s.degree || "N/D",
-      s.scholarshipType || "N/D",
+      (s.email || "").trim().toLowerCase() || "N/D",
+      (s.phone || "").trim() || "N/D",
+      (s.city || "").trim() || "N/D",
+      (s.university || "").trim() || "N/D",
+      (s.course || "").trim() || "N/D",
+      (s.degree || "").trim() || "N/D",
+      (s.scholarshipType || "").trim() || "N/D",
       s.arrivalDate ? formatDate(s.arrivalDate) : "N/D",
-      s.passportNumber || "N/D",
+      (s.passportNumber || "").trim().toUpperCase() || "N/D",
       s.passportExpiry ? formatDate(s.passportExpiry) : "N/D",
-      s.residenceCardNumber || "N/D",
+      (s.residenceCardNumber || "").trim().toUpperCase() || "N/D",
       s.residenceCardExpiry ? formatDate(s.residenceCardExpiry) : "N/D"
     ]);
 

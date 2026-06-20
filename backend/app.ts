@@ -58,8 +58,8 @@ app.post("/api/students", async (req, res) => {
       gender: gender || "M",
       passportNumber,
       passportExpiry: passportExpiry || "",
-      residenceCardNumber: residenceCardNumber || "Em Processo",
-      residenceCardExpiry: residenceCardExpiry || "2026-12-31"
+      residenceCardNumber: residenceCardNumber || "",
+      residenceCardExpiry: residenceCardExpiry || ""
     });
 
     res.status(201).json({ 
