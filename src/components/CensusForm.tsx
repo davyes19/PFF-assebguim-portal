@@ -25,6 +25,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     degree: "Licence",
     scholarshipType: "Boursier AMCI",
     passportNumber: "",
+    passportExpiry: "",
     residenceCardNumber: "En Cours",
     residenceCardExpiry: ""
   });
@@ -119,6 +120,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
       degree: "Licence",
       scholarshipType: "Boursier AMCI",
       passportNumber: "",
+      passportExpiry: "",
       residenceCardNumber: "En Cours",
       residenceCardExpiry: ""
     });
@@ -418,7 +420,18 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Numéro de Carte de Séjour / Récépissé Officiel</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Date d'Expiration du Passeport (Optionnel)</label>
+                <input
+                  type="date"
+                  name="passportExpiry"
+                  value={formData.passportExpiry}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Numéro de Carte de Séjour / Récépissé Officiel (Optionnel)</label>
                 <input
                   type="text"
                   name="residenceCardNumber"

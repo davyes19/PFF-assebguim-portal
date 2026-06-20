@@ -29,6 +29,7 @@ export interface Student {
   arrivalYear: string;
   gender: string;
   passportNumber: string;
+  passportExpiry: string;
   residenceCardNumber: string;
   residenceCardExpiry: string;
 }

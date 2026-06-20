@@ -36,6 +36,7 @@ app.post("/api/students", async (req, res) => {
       arrivalYear,
       gender,
       passportNumber,
+      passportExpiry,
       residenceCardNumber,
       residenceCardExpiry
     } = req.body;
@@ -56,6 +57,7 @@ app.post("/api/students", async (req, res) => {
       arrivalYear: arrivalYear || new Date().getFullYear().toString(),
       gender: gender || "M",
       passportNumber,
+      passportExpiry: passportExpiry || "",
       residenceCardNumber: residenceCardNumber || "Em Processo",
       residenceCardExpiry: residenceCardExpiry || "2026-12-31"
     });
