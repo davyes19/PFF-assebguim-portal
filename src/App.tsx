@@ -19,7 +19,7 @@ export interface Student {
   degree: string;
   scholarshipType: string;
   residencyStatus: string;
-  arrivalYear: string;
+  arrivalDate: string;
   gender: string;
   passportNumber: string;
   passportExpiry: string;

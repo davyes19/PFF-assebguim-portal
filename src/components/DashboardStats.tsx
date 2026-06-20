@@ -15,6 +15,17 @@ interface DashboardStatsProps {
   onRefresh: () => void;
 }
 
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "N/D";
+  if (dateStr.includes("-")) {
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+  }
+  return dateStr;
+};
+
 const COLORS = ["#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#6366f1", "#f43f5e"];
 
 export default function DashboardStats({ students, tickets, onRefresh }: DashboardStatsProps) {
@@ -64,8 +75,9 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
 
   // Arrival Year stats
   const arrivalYearCounts = students.reduce((acc, s) => {
-    if (!s.arrivalYear) return acc;
-    acc[s.arrivalYear] = (acc[s.arrivalYear] || 0) + 1;
+    if (!s.arrivalDate) return acc;
+    const year = s.arrivalDate.includes("-") ? s.arrivalDate.substring(0, 4) : s.arrivalDate;
+    acc[year] = (acc[year] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
@@ -75,7 +87,10 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
   })).sort((a,b) => parseInt(a.name) - parseInt(b.name));
 
   // Unique arrival years for filter dropdown
-  const arrivalYears = Array.from(new Set(students.map(s => s.arrivalYear).filter(Boolean))).sort().reverse();
+  const arrivalYears = Array.from(new Set(students.map(s => {
+    if (!s.arrivalDate) return "";
+    return s.arrivalDate.includes("-") ? s.arrivalDate.substring(0, 4) : s.arrivalDate;
+  }).filter(Boolean))).sort().reverse();
 
   // Search and Year filter
   const filteredStudents = students.filter(s => {
@@ -88,14 +103,15 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
       s.degree.toLowerCase().includes(query) ||
       s.passportNumber.toLowerCase().includes(query)
     );
-    const matchesYear = filterYear === "All" || s.arrivalYear === filterYear;
+    const studentYear = s.arrivalDate ? (s.arrivalDate.includes("-") ? s.arrivalDate.substring(0, 4) : s.arrivalDate) : "";
+    const matchesYear = filterYear === "All" || studentYear === filterYear;
     
     return matchesSearch && matchesYear;
   });
 
   // Export to CSV helper - text generation
   const downloadCSV = () => {
-    const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Année Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
+    const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
     const rows = students.map((s, index) => [
       (index + 1).toString(),
       s.fullName,
@@ -107,7 +123,7 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
       s.course,
       s.degree,
       s.scholarshipType,
-      s.arrivalYear,
+      s.arrivalDate ? formatDate(s.arrivalDate) : "N/D",
       s.passportNumber,
       s.passportExpiry,
       s.residenceCardNumber,
@@ -412,8 +428,8 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
                           <p className="flex items-center gap-1 font-semibold text-slate-800">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#009E49] shrink-0" /> {s.city}
                           </p>
-                          <span className="bg-slate-100 font-mono text-[10px] text-slate-600 px-1.5 py-0.5 rounded flex items-center gap-1 w-max">
-                            <Calendar className="h-3 w-3" /> Arrivé en: {s.arrivalYear}
+                          <span className="bg-slate-105 font-mono text-[10px] text-slate-600 px-1.5 py-0.5 rounded flex items-center gap-1 w-max">
+                            <Calendar className="h-3 w-3" /> Arrivé le: {formatDate(s.arrivalDate)}
                           </span>
                         </div>
                       </td>

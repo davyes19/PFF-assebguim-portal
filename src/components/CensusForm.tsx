@@ -17,7 +17,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     birthDate: "",
     email: "",
     phone: "",
-    arrivalYear: new Date().getFullYear().toString(),
+    arrivalDate: "",
     gender: "M",
     city: "Rabat",
     university: "",
@@ -37,7 +37,6 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
   const degrees = ["Licence", "Master", "Doctorat", "Technicien Supérieur", "Autre"];
   const scholarshipTypes = ["Boursier AMCI", "Privé / Auto-financé"];
-  const arrivalYears = Array.from({ length: 16 }, (_, i) => (new Date().getFullYear() + 1 - i).toString());
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -112,7 +111,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
       birthDate: "",
       email: "",
       phone: "",
-      arrivalYear: new Date().getFullYear().toString(),
+      arrivalDate: "",
       gender: "M",
       city: "Rabat",
       university: "",
@@ -297,17 +296,14 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Année d'Arr. au Maroc (Optionnel)</label>
-                  <select
-                    name="arrivalYear"
-                    value={formData.arrivalYear}
+                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Date d'Arrivée au Maroc (Optionnel)</label>
+                  <input
+                    type="date"
+                    name="arrivalDate"
+                    value={formData.arrivalDate}
                     onChange={handleInputChange}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
-                  >
-                    {arrivalYears.map(yr => (
-                      <option key={yr} value={yr}>{yr}</option>
-                    ))}
-                  </select>
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
+                  />
                 </div>
               </div>
             </div>

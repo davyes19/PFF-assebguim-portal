@@ -26,7 +26,7 @@ export interface Student {
   scholarshipType: string;
   residencyStatus: string;
   birthDate: string;
-  arrivalYear: string;
+  arrivalDate: string;
   gender: string;
   passportNumber: string;
   passportExpiry: string;
