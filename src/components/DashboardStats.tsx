@@ -114,32 +114,38 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
     const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
     const rows = students.map((s, index) => [
       (index + 1).toString(),
-      s.fullName,
-      s.birthDate || "N/A",
-      s.email,
-      s.phone,
-      s.city,
-      s.university,
-      s.course,
-      s.degree,
-      s.scholarshipType,
+      s.fullName || "N/D",
+      s.birthDate ? formatDate(s.birthDate) : "N/D",
+      s.email || "N/D",
+      s.phone || "N/D",
+      s.city || "N/D",
+      s.university || "N/D",
+      s.course || "N/D",
+      s.degree || "N/D",
+      s.scholarshipType || "N/D",
       s.arrivalDate ? formatDate(s.arrivalDate) : "N/D",
-      s.passportNumber,
-      s.passportExpiry,
-      s.residenceCardNumber,
-      s.residenceCardExpiry
+      s.passportNumber || "N/D",
+      s.passportExpiry ? formatDate(s.passportExpiry) : "N/D",
+      s.residenceCardNumber || "N/D",
+      s.residenceCardExpiry ? formatDate(s.residenceCardExpiry) : "N/D"
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + [headers.join(","), ...rows.map(e => e.map(val => `"${val}"`).join(","))].join("\n");
+    // Use semicolon as separator for better compatibility with Excel (French/Portuguese region settings)
+    // Add UTF-8 BOM (\uFEFF) so Excel opens it with the correct encoding (preserving accented characters)
+    const csvContent = "\uFEFF" + [
+      headers.join(";"), 
+      ...rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(";"))
+    ].join("\n");
       
-    const encodedUri = encodeURI(csvContent);
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Cense_ASSEBGUIM_Cartographie_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Recensement_ASSEBGUIM_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Helper to color check passport expiration
