@@ -8,10 +8,36 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// 1. API Endpoints
+const verifyAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ error: "Accès refusé. Token manquant." });
+  }
+  const token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
+  const adminPass = process.env.ADMIN_PASSWORD || "asegbm2026";
+  if (token === adminPass) {
+    return next();
+  }
+  return res.status(401).json({ error: "Accès refusé. Token invalide." });
+};
 
-// GET /api/students - Get all mapped students (Admin only view, validated on client side)
-app.get("/api/students", async (req, res) => {
+// POST /api/admin/login - Authenticate admin credentials
+app.post("/api/admin/login", (req, res) => {
+  const { username, password } = req.body;
+  const adminUser = process.env.ADMIN_USER || "admin";
+  const adminPass = process.env.ADMIN_PASSWORD || "asegbm2026";
+
+  if (
+    (username === adminUser || username === "admin@asegbm.org") &&
+    password === adminPass
+  ) {
+    return res.json({ success: true, token: `Bearer ${adminPass}` });
+  }
+  return res.status(401).json({ error: "Identifiants invalides." });
+});
+
+// GET /api/students - Get all mapped students (Admin only view, protected)
+app.get("/api/students", verifyAdmin, async (req, res) => {
   try {
     const students = await db.getStudents();
     res.json(students);
@@ -77,7 +103,7 @@ app.post("/api/students", async (req, res) => {
 });
 
 // GET /api/tickets - Support tickets (Admin)
-app.get("/api/tickets", async (req, res) => {
+app.get("/api/tickets", verifyAdmin, async (req, res) => {
   try {
     const tickets = await db.getTickets();
     res.json(tickets);
@@ -113,7 +139,7 @@ app.post("/api/tickets", async (req, res) => {
 });
 
 // PATCH /api/tickets/:id - Change support ticket status (Admin)
-app.patch("/api/tickets/:id", async (req, res) => {
+app.patch("/api/tickets/:id", verifyAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

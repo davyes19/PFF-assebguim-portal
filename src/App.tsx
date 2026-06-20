@@ -41,7 +41,8 @@ export interface SupportTicket {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("census");
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem("admin_token"));
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => !!localStorage.getItem("admin_token"));
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   
   // Data States
@@ -52,16 +53,28 @@ export default function App() {
 
   // Load students list and tickets list
   const loadDatabaseData = async () => {
+    if (!adminToken) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      // Fetch concurrently
+      // Fetch concurrently with auth headers
       const [studentsRes, ticketsRes] = await Promise.all([
-        fetch("/api/students"),
-        fetch("/api/tickets")
+        fetch("/api/students", {
+          headers: { "Authorization": adminToken }
+        }),
+        fetch("/api/tickets", {
+          headers: { "Authorization": adminToken }
+        })
       ]);
 
       if (!studentsRes.ok || !ticketsRes.ok) {
+        if (studentsRes.status === 401 || ticketsRes.status === 401) {
+          handleLogout();
+          throw new Error("Session expirée ou invalide. Veuillez vous reconnecter.");
+        }
         throw new Error("Falha ao comunicar com os endpoints da API ASSEBGUIM Central.");
       }
 
@@ -72,25 +85,34 @@ export default function App() {
       setTickets(ticketsData);
     } catch (e: any) {
       console.error(e);
-      setError("Incapaz de carregar estatísticas e chamados. Verifique se o servidor backend está online.");
+      setError(e.message || "Incapaz de carregar estatísticas e chamados. Verifique se o servidor backend está online.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDatabaseData();
-  }, []);
+    if (adminToken) {
+      loadDatabaseData();
+    } else {
+      setLoading(false);
+    }
+  }, [adminToken]);
 
   // When admin successfully logs in
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (token: string) => {
+    localStorage.setItem("admin_token", token);
+    setAdminToken(token);
     setIsAdmin(true);
     setActiveTab("dashboard"); // Auto switch to management
-    loadDatabaseData(); // Fetch latest
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    setAdminToken(null);
     setIsAdmin(false);
+    setStudents([]);
+    setTickets([]);
     if (activeTab === "dashboard") {
       setActiveTab("census"); // Lock away administrative panel
     }
@@ -152,6 +174,7 @@ export default function App() {
                 <SupportPortal 
                   tickets={tickets} 
                   isAdmin={isAdmin} 
+                  adminToken={adminToken}
                   onRefresh={loadDatabaseData} 
                 />
               </div>

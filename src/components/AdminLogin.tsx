@@ -4,7 +4,7 @@ import { Shield, Eye, EyeOff, Lock, User, AlertCircle, X, Check } from "lucide-r
 interface AdminLoginProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: () => void;
+  onLoginSuccess: (token: string) => void;
 }
 
 export default function AdminLogin({ isOpen, onClose, onLoginSuccess }: AdminLoginProps) {
@@ -16,29 +16,34 @@ export default function AdminLogin({ isOpen, onClose, onLoginSuccess }: AdminLog
 
   if (!isOpen) return null;
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    // Realistic demo local admin credentials
-    const DEFAULT_USER = "admin";
-    const DEFAULT_PASS = "asegbm2026";
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
 
-    setTimeout(() => {
-      if (
-        (username.trim() === DEFAULT_USER || username.trim() === "admin@asegbm.org") &&
-        password === DEFAULT_PASS
-      ) {
-        onLoginSuccess();
-        setUsername("");
-        setPassword("");
-        onClose();
-      } else {
-        setError("Identifiants invalides. Veuillez vérifier le nom d'utilisateur et le mot de passe.");
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Identifiants invalides.");
       }
+
+      onLoginSuccess(data.token);
+      setUsername("");
+      setPassword("");
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "Erreur lors de la connexion.");
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (

@@ -8,10 +8,11 @@ import {
 interface SupportPortalProps {
   tickets: SupportTicket[];
   isAdmin: boolean;
+  adminToken: string | null;
   onRefresh: () => void;
 }
 
-export default function SupportPortal({ tickets, isAdmin, onRefresh }: SupportPortalProps) {
+export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh }: SupportPortalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -78,9 +79,13 @@ export default function SupportPortal({ tickets, isAdmin, onRefresh }: SupportPo
 
   const handleUpdateStatus = async (ticketId: string, newStatus: string) => {
     try {
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (adminToken) {
+        headers["Authorization"] = adminToken;
+      }
       const response = await fetch(`/api/tickets/${ticketId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ status: newStatus })
       });
 
