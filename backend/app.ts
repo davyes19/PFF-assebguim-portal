@@ -40,11 +40,7 @@ app.post("/api/students", async (req, res) => {
       residenceCardExpiry
     } = req.body;
 
-    // Validate required fields
-    if (!fullName || !email || !phone || !city || !university || !course || !degree || !scholarshipType || !passportNumber) {
-      return res.status(400).json({ error: "Veuillez remplir tous les champs obligatoires du recensement académique." });
-    }
-
+    // Todos os campos são opcionais agora
 
 
     const newStudent = await db.addStudent({

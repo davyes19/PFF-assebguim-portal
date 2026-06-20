@@ -54,16 +54,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
   const validateStep = () => {
     setError(null);
-    if (step === 1) {
-      if (!formData.fullName.trim()) return "Le Nom Complet est obligatoire.";
-      if (!formData.email.trim() || !formData.email.includes("@")) return "Veuillez saisir une adresse email valide.";
-      if (!formData.phone.trim()) return "Le téléphone est obligatoire.";
-    } else if (step === 2) {
-      if (!formData.university.trim()) return "L'Université/Établissement est obligatoire.";
-      if (!formData.course.trim()) return "La filière spécifique est obligatoire.";
-    } else if (step === 3) {
-      if (!formData.passportNumber.trim()) return "Le numéro de passeport est obligatoire.";
-    }
+    // All fields are optional
     return null;
   };
 
@@ -243,11 +234,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Nom Complet *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Nom Complet (Optionnel)</label>
                 <input
                   type="text"
                   name="fullName"
-                  required
                   placeholder="Ex: Mamadou Saido Baldé"
                   value={formData.fullName}
                   onChange={handleInputChange}
@@ -267,11 +257,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Adresse Email *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Adresse Email (Optionnel)</label>
                 <input
                   type="email"
                   name="email"
-                  required
                   placeholder="Ex: son-email@gmail.com"
                   value={formData.email}
                   onChange={handleInputChange}
@@ -280,11 +269,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Téléphone de Contact (Maroc / GB) *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Téléphone de Contact (Maroc / GB) (Optionnel)</label>
                 <input
                   type="text"
                   name="phone"
-                  required
                   placeholder="Ex: +212 612345678"
                   value={formData.phone}
                   onChange={handlePhoneChange}
@@ -295,7 +283,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Genre *</label>
+                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Genre (Optionnel)</label>
                   <select
                     name="gender"
                     value={formData.gender}
@@ -307,7 +295,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Année d'Arr. au Maroc *</label>
+                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Année d'Arr. au Maroc (Optionnel)</label>
                   <select
                     name="arrivalYear"
                     value={formData.arrivalYear}
@@ -333,7 +321,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Ville de Résidence au Maroc *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Ville de Résidence au Maroc (Optionnel)</label>
                 <select
                   name="city"
                   value={formData.city}
@@ -347,7 +335,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Niveau / Diplôme Académique *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Niveau / Diplôme Académique (Optionnel)</label>
                 <select
                   name="degree"
                   value={formData.degree}
@@ -361,11 +349,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Université ou Établissement d'Enseignement *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Université ou Établissement d'Enseignement (Optionnel)</label>
                 <input
                   type="text"
                   name="university"
-                  required
                   placeholder="Ex: FST - Faculté des Sciences et Techniques de Mohammedia"
                   value={formData.university}
                   onChange={handleInputChange}
@@ -374,11 +361,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Nom de la Filière / Spécialité *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Nom de la Filière / Spécialité (Optionnel)</label>
                 <input
                   type="text"
                   name="course"
-                  required
                   placeholder="Ex: Génie Logiciel / Droit"
                   value={formData.course}
                   onChange={handleInputChange}
@@ -387,7 +373,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-slate-650 mb-1.5">Type de Bourse *</label>
+                <label className="block text-[11px] font-bold text-slate-650 mb-1.5">Type de Bourse (Optionnel)</label>
                 <select
                   name="scholarshipType"
                   value={formData.scholarshipType}
@@ -420,11 +406,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Numéro de Passeport Guinéen *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Numéro de Passeport Guinéen (Optionnel)</label>
                 <input
                   type="text"
                   name="passportNumber"
-                  required
                   placeholder="Ex: GW012345"
                   value={formData.passportNumber}
                   onChange={handleInputChange}
