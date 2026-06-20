@@ -95,7 +95,7 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
 
   // Export to CSV helper - text generation
   const downloadCSV = () => {
-    const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Année Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
+    const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Année Arrivée", "Passeport", "Séjour", "Expiration Séjour"];
     const rows = students.map((s, index) => [
       (index + 1).toString(),
       s.fullName,
@@ -109,7 +109,6 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
       s.scholarshipType,
       s.arrivalYear,
       s.passportNumber,
-      s.passportExpiry,
       s.residenceCardNumber,
       s.residenceCardExpiry
     ]);
@@ -449,10 +448,6 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
                               {isVisible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                             </button>
                           </div>
-                          <p className="text-slate-500 text-[10px] font-mono leading-tight">
-                            Exp: {s.passportExpiry}
-                          </p>
-                          {getExpirationBadge(s.passportExpiry)}
                         </div>
                       </td>
                       <td className="p-4 whitespace-nowrap">

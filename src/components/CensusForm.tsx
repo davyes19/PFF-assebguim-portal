@@ -25,7 +25,6 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     degree: "Licence",
     scholarshipType: "Boursier AMCI",
     passportNumber: "",
-    passportExpiry: "",
     residenceCardNumber: "En Cours",
     residenceCardExpiry: ""
   });
@@ -57,7 +56,6 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     setError(null);
     if (step === 1) {
       if (!formData.fullName.trim()) return "Le Nom Complet est obligatoire.";
-      if (!formData.birthDate) return "La date de naissance est obligatoire.";
       if (!formData.email.trim() || !formData.email.includes("@")) return "Veuillez saisir une adresse email valide.";
       if (!formData.phone.trim()) return "Le téléphone est obligatoire.";
     } else if (step === 2) {
@@ -65,7 +63,6 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
       if (!formData.course.trim()) return "La filière spécifique est obligatoire.";
     } else if (step === 3) {
       if (!formData.passportNumber.trim()) return "Le numéro de passeport est obligatoire.";
-      if (!formData.passportExpiry) return "La date d'expiration du passeport est obligatoire.";
     }
     return null;
   };
@@ -131,7 +128,6 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
       degree: "Licence",
       scholarshipType: "Boursier AMCI",
       passportNumber: "",
-      passportExpiry: "",
       residenceCardNumber: "En Cours",
       residenceCardExpiry: ""
     });
@@ -260,11 +256,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Date de Naissance *</label>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Date de Naissance (Optionnel)</label>
                 <input
                   type="date"
                   name="birthDate"
-                  required
                   value={formData.birthDate}
                   onChange={handleInputChange}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
@@ -434,18 +429,6 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   value={formData.passportNumber}
                   onChange={handleInputChange}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono uppercase"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-650 mb-1.5">Date d'Expiration du Passeport *</label>
-                <input
-                  type="date"
-                  name="passportExpiry"
-                  required
-                  value={formData.passportExpiry}
-                  onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
                 />
               </div>
 
