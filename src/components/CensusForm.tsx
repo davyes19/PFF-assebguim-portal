@@ -74,6 +74,10 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (step < 3) {
+      handleNext();
+      return;
+    }
     const err = validateStep();
     if (err) {
       setError(err);
