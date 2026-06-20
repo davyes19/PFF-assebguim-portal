@@ -15,6 +15,8 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
   const [formData, setFormData] = useState({
     fullName: "",
     birthDate: "",
+    birthPlace: "",
+    nationality: "",
     email: "",
     phone: "",
     arrivalDate: "",
@@ -113,6 +115,8 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     setFormData({
       fullName: "",
       birthDate: "",
+      birthPlace: "",
+      nationality: "",
       email: "",
       phone: "",
       arrivalDate: "",
@@ -284,6 +288,30 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
                 />
                 <p className="text-[10px] text-slate-500 mt-1">Format international recommandé (Ex : +212 600-000000).</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Lieu de Naissance (Optionnel)</label>
+                <input
+                  type="text"
+                  name="birthPlace"
+                  placeholder="Ex: Conakry"
+                  value={formData.birthPlace}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Nationalité (Optionnel)</label>
+                <input
+                  type="text"
+                  name="nationality"
+                  placeholder="Ex: Guinéenne"
+                  value={formData.nationality}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

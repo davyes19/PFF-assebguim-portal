@@ -111,11 +111,17 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
 
   // Export to CSV helper - text generation
   const downloadCSV = () => {
-    const headers = ["N°", "Nom Complet", "Date de Naissance", "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"];
+    const headers = [
+      "N°", "Nom Complet", "Date de Naissance", "Lieu de Naissance", "Nationalité", 
+      "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", 
+      "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"
+    ];
     const rows = students.map((s, index) => [
       (index + 1).toString(),
       (s.fullName || "").trim() || "N/D",
       s.birthDate ? formatDate(s.birthDate) : "N/D",
+      (s.birthPlace || "").trim() || "N/D",
+      (s.nationality || "").trim() || "N/D",
       (s.email || "").trim().toLowerCase() || "N/D",
       (s.phone || "").trim() || "N/D",
       (s.city || "").trim() || "N/D",
@@ -427,6 +433,12 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
                           <p className="font-bold text-slate-900">{s.fullName}</p>
                           <p className="text-slate-500 font-mono mt-0.5 text-[11px]">{s.email}</p>
                           <p className="text-slate-500 font-mono text-[11px]">{s.phone}</p>
+                          {(s.nationality || s.birthPlace) && (
+                            <div className="text-slate-500 mt-1 text-[10px] flex flex-wrap gap-1 items-center">
+                              {s.nationality && <span className="bg-slate-100 text-slate-650 px-1.5 py-0.5 rounded font-semibold">{s.nationality}</span>}
+                              {s.birthPlace && <span className="text-slate-450 font-mono">Né(e) à: {s.birthPlace}</span>}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="p-4 text-slate-600">

@@ -26,6 +26,8 @@ app.post("/api/students", async (req, res) => {
     const {
       fullName,
       birthDate,
+      birthPlace,
+      nationality,
       email,
       phone,
       city,
@@ -47,6 +49,8 @@ app.post("/api/students", async (req, res) => {
     const newStudent = await db.addStudent({
       fullName,
       birthDate,
+      birthPlace: birthPlace || "",
+      nationality: nationality || "",
       email,
       phone,
       city,
