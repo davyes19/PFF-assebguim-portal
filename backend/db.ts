@@ -84,6 +84,12 @@ class Database {
     if (error) throw new Error(error.message);
     return data;
   }
+
+  async updateStudent(id: string, studentData: Partial<Omit<Student, 'id'>>): Promise<Student | null> {
+    const { data, error } = await supabase.from('students').update(studentData).eq('id', id).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
 }
 
 export const db = new Database();

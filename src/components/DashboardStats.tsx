@@ -6,12 +6,13 @@ import {
 } from "recharts";
 import { 
   Users, Award, HelpCircle, Search, MapPin, Calendar, 
-  GraduationCap, Download, RefreshCw, Eye, EyeOff, CheckCircle, Clock, AlertTriangle, ShieldCheck 
+  GraduationCap, Download, RefreshCw, Eye, EyeOff, CheckCircle, Clock, AlertTriangle, ShieldCheck, Edit, X 
 } from "lucide-react";
 
 interface DashboardStatsProps {
   students: Student[];
   tickets: SupportTicket[];
+  adminToken?: string | null;
   onRefresh: () => void;
 }
 
@@ -28,13 +29,79 @@ const formatDate = (dateStr: string) => {
 
 const COLORS = ["#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#6366f1", "#f43f5e"];
 
-export default function DashboardStats({ students, tickets, onRefresh }: DashboardStatsProps) {
+export default function DashboardStats({ students, tickets, adminToken, onRefresh }: DashboardStatsProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterYear, setFilterYear] = useState<string>("All");
   const [showPassportInfo, setShowPassportInfo] = useState<Record<string, boolean>>({});
+  
+  // Edit Student States
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [editForm, setEditForm] = useState<Student | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  const editCities = [
+    "Agadir", "Al Hoceima", "Asilah", "Béni Mellal", "Berkane", "Berrechid", "Boujdour", 
+    "Bouskoura", "Casablanca", "Chefchaouen", "Dakhla", "El Jadida", "Errachidia", 
+    "Essaouira", "Fès", "Fkih Ben Salah", "Guelmim", "Ifrane", "Jerada", "Kalaat Sraghna", 
+    "Kénitra", "Khémisset", "Khouribga", "Ksar El Kebir", "Laâyoune", "Larache", 
+    "Marrakech", "Meknès", "Midelt", "Mohammedia", "Nador", "Ouarzazate", "Oued Zem", 
+    "Ouazzane", "Oujda", "Rabat", "Safi", "Salé", "Settat", "Sidi Bennour", "Sidi Slimane", 
+    "Skhirat", "Tan-Tan", "Tanger", "Taroudant", "Taza", "Témara", "Tétouan", "Tinghir", 
+    "Tiznit", "Youssoufia"
+  ];
 
   const togglePassportDetails = (id: string) => {
     setShowPassportInfo(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleEditClick = (student: Student) => {
+    setEditingStudent(student);
+    setEditForm({ ...student });
+    setEditError(null);
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (!editForm) return;
+    const { name, value } = e.target;
+    setEditForm(prev => prev ? { ...prev, [name]: value } : null);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStudent || !editForm) return;
+
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (adminToken) {
+        headers["Authorization"] = adminToken;
+      }
+
+      // Prepare payload - we omit id and residencyStatus if backend doesn't want them in updates
+      const { id, residencyStatus, ...payload } = editForm;
+
+      const response = await fetch(`/api/students/${editingStudent.id}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue lors de la mise à jour.");
+      }
+
+      setEditingStudent(null);
+      setEditForm(null);
+      onRefresh(); // Reload main students list
+    } catch (err: any) {
+      setEditError(err.message || "Erreur lors de la sauvegarde.");
+    } finally {
+      setEditLoading(false);
+    }
   };
 
   // Calculations & KPIs
@@ -421,6 +488,7 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
                   <th className="p-4 uppercase tracking-wider font-semibold">Bourse / Financement</th>
                   <th className="p-4 uppercase tracking-wider font-semibold">Passeport</th>
                   <th className="p-4 uppercase tracking-wider font-semibold">Carte de Séjour</th>
+                  <th className="p-4 uppercase tracking-wider font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -504,6 +572,15 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
                           )}
                         </div>
                       </td>
+                      <td className="p-4 text-right whitespace-nowrap">
+                        <button
+                          onClick={() => handleEditClick(s)}
+                          className="bg-amber-550 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                          <span>Éditer</span>
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -516,6 +593,274 @@ export default function DashboardStats({ students, tickets, onRefresh }: Dashboa
           </div>
         )}
       </div>
+
+      {/* 4. Edit Student Modal */}
+      {editingStudent && editForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" id="edit-student-modal">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" 
+            onClick={() => { setEditingStudent(null); setEditForm(null); }} 
+          />
+
+          {/* Modal Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-xl relative z-10 animate-scale-up text-xs flex flex-col">
+            {/* Decorative top strip */}
+            <div className="absolute top-0 right-0 h-1.5 w-full bg-gradient-to-r from-yellow-500 to-amber-600" />
+
+            {/* Modal header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-800 tracking-tight uppercase">Modifier la Fiche Étudiant</h3>
+                <p className="text-slate-500 text-[11px] leading-tight">Modification de la fiche de {editingStudent.fullName}</p>
+              </div>
+              <button 
+                onClick={() => { setEditingStudent(null); setEditForm(null); }}
+                className="text-slate-400 hover:text-slate-800 transition p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="h-4.5 w-4.5" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveEdit} className="space-y-5 flex-1">
+              {editError && (
+                <div className="bg-red-50 border border-red-200 text-red-650 p-3 rounded-xl flex items-start gap-2 animate-shake">
+                  <AlertTriangle className="h-4.5 w-4.5 shrink-0 text-red-600 mt-0.5" />
+                  <span>{editError}</span>
+                </div>
+              )}
+
+              {/* STEP 1 FIELDS (Personnel) */}
+              <div>
+                <h4 className="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-3">1. Informations Personnelles</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Nom Complet</label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={editForm.fullName || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Date de Naissance</label>
+                    <input
+                      type="date"
+                      name="birthDate"
+                      value={editForm.birthDate || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Lieu de Naissance</label>
+                    <input
+                      type="text"
+                      name="birthPlace"
+                      value={editForm.birthPlace || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Nationalité</label>
+                    <input
+                      type="text"
+                      name="nationality"
+                      value={editForm.nationality || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Adresse Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={editForm.email || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Téléphone</label>
+                    <input
+                      type="text"
+                      name="phone"
+                      value={editForm.phone || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Genre</label>
+                    <select
+                      name="gender"
+                      value={editForm.gender || "M"}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    >
+                      <option value="M">Masculin</option>
+                      <option value="F">Féminin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Date d'Arrivée au Maroc</label>
+                    <input
+                      type="date"
+                      name="arrivalDate"
+                      value={editForm.arrivalDate || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 2 FIELDS (Academic) */}
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-3">2. Données Académiques & Localisation</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Ville de Résidence au Maroc</label>
+                    <select
+                      name="city"
+                      value={editForm.city || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    >
+                      <option value="">Choisir une ville...</option>
+                      {editCities.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Niveau / Diplôme Académique</label>
+                    <select
+                      name="degree"
+                      value={editForm.degree || "Licence"}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    >
+                      <option value="Licence">Licence</option>
+                      <option value="Master">Master</option>
+                      <option value="Doctorat">Doctorat</option>
+                      <option value="Technicien Supérieur">Technicien Supérieur</option>
+                      <option value="Autre">Autre</option>
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-slate-605 font-bold mb-1.5">Université / Établissement d'Enseignement</label>
+                    <input
+                      type="text"
+                      name="university"
+                      value={editForm.university || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Filière / Spécialité</label>
+                    <input
+                      type="text"
+                      name="course"
+                      value={editForm.course || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Type de Bourse</label>
+                    <select
+                      name="scholarshipType"
+                      value={editForm.scholarshipType || "Boursier AMCI"}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                    >
+                      <option value="Boursier AMCI">Boursier AMCI</option>
+                      <option value="Privé / Auto-financé">Privé / Auto-financé</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* STEP 3 FIELDS (Official Identification) */}
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-3">3. Identification Officielle</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Numéro de Passeport</label>
+                    <input
+                      type="text"
+                      name="passportNumber"
+                      value={editForm.passportNumber || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Expiration Passeport</label>
+                    <input
+                      type="date"
+                      name="passportExpiry"
+                      value={editForm.passportExpiry || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Carte de Séjour (Numéro / En Cours)</label>
+                    <input
+                      type="text"
+                      name="residenceCardNumber"
+                      value={editForm.residenceCardNumber || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono uppercase font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Expiration Carte de Séjour</label>
+                    <input
+                      type="date"
+                      name="residenceCardExpiry"
+                      value={editForm.residenceCardExpiry || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="border-t border-slate-200 pt-4 flex items-center justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => { setEditingStudent(null); setEditForm(null); }}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition cursor-pointer"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl transition-all duration-300 transform active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  {editLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-950 border-t-transparent" />
+                  ) : (
+                    <ShieldCheck className="h-4.5 w-4.5" />
+                  )}
+                  <span>Sauvegarder</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

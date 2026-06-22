@@ -185,6 +185,7 @@ export default function App() {
                 <DashboardStats 
                   students={students} 
                   tickets={tickets} 
+                  adminToken={adminToken}
                   onRefresh={loadDatabaseData} 
                 />
               </div>

@@ -102,6 +102,23 @@ app.post("/api/students", async (req, res) => {
   }
 });
 
+// PUT /api/students/:id - Update student details (Admin only, protected)
+app.put("/api/students/:id", verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateFields = req.body;
+
+    const updated = await db.updateStudent(id, updateFields);
+    if (!updated) {
+      return res.status(404).json({ error: "Étudiant introuvable." });
+    }
+
+    res.json({ success: true, message: "Fiche étudiant mise à jour avec succès !", student: updated });
+  } catch (e: any) {
+    res.status(500).json({ error: "Erreur lors de la mise à jour de la fiche étudiant : " + e.message });
+  }
+});
+
 // GET /api/tickets - Support tickets (Admin)
 app.get("/api/tickets", verifyAdmin, async (req, res) => {
   try {

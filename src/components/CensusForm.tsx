@@ -21,7 +21,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     phone: "",
     arrivalDate: "",
     gender: "M",
-    city: "Rabat",
+    city: "",
     university: "",
     course: "",
     degree: "Licence",
@@ -33,8 +33,14 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
   });
 
   const cities = [
-    "Rabat", "Casablanca", "Tanger", "Fes", "Marrakech", "Kenitra", "Oujda", 
-    "Tetouan", "Agadir", "Mohammedia", "Meknes", "Settat", "El Jadida", "El Hoceima", "Safi", "Laâyoune", "Dakhla","Essaouira", "Beni Mellal", "Errachidia", "Salé",
+    "Agadir", "Al Hoceima", "Asilah", "Béni Mellal", "Berkane", "Berrechid", "Boujdour", 
+    "Bouskoura", "Casablanca", "Chefchaouen", "Dakhla", "El Jadida", "Errachidia", 
+    "Essaouira", "Fès", "Fkih Ben Salah", "Guelmim", "Ifrane", "Jerada", "Kalaat Sraghna", 
+    "Kénitra", "Khémisset", "Khouribga", "Ksar El Kebir", "Laâyoune", "Larache", 
+    "Marrakech", "Meknès", "Midelt", "Mohammedia", "Nador", "Ouarzazate", "Oued Zem", 
+    "Ouazzane", "Oujda", "Rabat", "Safi", "Salé", "Settat", "Sidi Bennour", "Sidi Slimane", 
+    "Skhirat", "Tan-Tan", "Tanger", "Taroudant", "Taza", "Témara", "Tétouan", "Tinghir", 
+    "Tiznit", "Youssoufia"
   ];
 
   const degrees = ["Licence", "Master", "Doctorat", "Technicien Supérieur", "Autre"];
@@ -121,7 +127,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
       phone: "",
       arrivalDate: "",
       gender: "M",
-      city: "Rabat",
+      city: "",
       university: "",
       course: "",
       degree: "Licence",
@@ -358,6 +364,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   onChange={handleInputChange}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
                 >
+                  <option value="">Choisir une ville...</option>
                   {cities.map(c => (
                     <option key={c} value={c}>{c}</option>
                   ))}
