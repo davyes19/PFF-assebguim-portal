@@ -178,4 +178,14 @@ app.patch("/api/tickets/:id", verifyAdmin, async (req, res) => {
 
 
 
+// GET /api/ping - Public health check route to keep Supabase database active
+app.get("/api/ping", async (req, res) => {
+  try {
+    await db.ping();
+    res.json({ status: "ok", message: "Ambassade API and Supabase Database are active." });
+  } catch (e: any) {
+    res.status(500).json({ error: "Database communication failed: " + e.message });
+  }
+});
+
 export default app;

@@ -90,6 +90,12 @@ class Database {
     if (error) throw new Error(error.message);
     return data;
   }
+
+  async ping(): Promise<boolean> {
+    const { data, error } = await supabase.from('support_tickets').select('id').limit(1);
+    if (error) throw new Error(error.message);
+    return true;
+  }
 }
 
 export const db = new Database();
