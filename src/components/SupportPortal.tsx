@@ -20,7 +20,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
   // States for student ticket submission
   const [ticketForm, setTicketForm] = useState({
     studentName: "",
-    email: "etudiant@assebguim.central",
+    email: "etudiant@ambassade-guineebissau.org",
     category: "Documentation",
     description: ""
   });
@@ -65,7 +65,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
       setSuccessMsg(data.message || "Ticket d'assistance enregistré avec grand succès !");
       setTicketForm({
         studentName: "",
-        email: "etudiant@assebguim.central",
+        email: "etudiant@ambassade-guineebissau.org",
         category: "Documentation",
         description: ""
       });
@@ -183,7 +183,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
             </div>
 
             <div>
-              <label className="block text-slate-650 font-bold mb-1.5 font-sans">Comment l'ASSEBGUIM Central peut-elle vous aider ? *</label>
+              <label className="block text-slate-650 font-bold mb-1.5 font-sans">Comment les services de l'Ambassade peuvent-ils vous aider ? *</label>
               <textarea
                 name="description"
                 rows={4}

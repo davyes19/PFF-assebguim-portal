@@ -147,7 +147,7 @@ app.post("/api/tickets", async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Ticket soumis avec succès ! La direction d'ASSEBGUIM Central analysera votre demande dès que possible.",
+      message: "Ticket soumis avec succès ! Les services consulaires de l'Ambassade analyseront votre demande dès que possible.",
       ticket: newTicket
     });
   } catch (e: any) {

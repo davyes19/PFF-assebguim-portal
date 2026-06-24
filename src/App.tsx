@@ -75,7 +75,7 @@ export default function App() {
           handleLogout();
           throw new Error("Session expirée ou invalide. Veuillez vous reconnecter.");
         }
-        throw new Error("Falha ao comunicar com os endpoints da API ASSEBGUIM Central.");
+        throw new Error("Falha ao comunicar com a API da Embaixada.");
       }
 
       const studentsData = await studentsRes.json();
@@ -197,7 +197,7 @@ export default function App() {
       {/* 4. Portal Footer Credit Line (Humble & Elegant) */}
       <footer className="bg-slate-50 border-t border-slate-150 py-4 text-center text-[11px] text-slate-500" id="portal-footer">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-2">
-          <p>© {new Date().getFullYear()} ASSEBGUIM Central. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Ambassade de Guinée-Bissau au Maroc. Tous droits réservés.</p>
         </div>
       </footer>
 

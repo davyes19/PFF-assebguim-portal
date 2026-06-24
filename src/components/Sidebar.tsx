@@ -82,7 +82,7 @@ export default function Sidebar({ activeTab, setActiveTab, isAdmin }: SidebarPro
             <span className="font-semibold text-slate-700 font-sans">Confidentialité</span>
           </div>
           <p className="text-[10px] text-slate-500 leading-relaxed">
-            Données collectées chiffrées de manière sécurisée. Conformément aux directives de protection interne de l'ASSEBGUIM Central.
+            Données collectées chiffrées de manière sécurisée. Conformément aux directives de protection interne de l'Ambassade.
           </p>
         </div>
       </aside>

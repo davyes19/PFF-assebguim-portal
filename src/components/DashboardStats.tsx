@@ -214,7 +214,7 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Recensement_ASSEBGUIM_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `Recensement_Ambassade_GB_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -259,7 +259,7 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
             <ShieldCheck className="text-amber-500 h-6 w-6 sm:h-7 sm:w-7" />
             Statistiques & Cartographie Démographique
           </h2>
-          <p className="text-sm text-slate-500">Direction Générale de Suivi Académique de l'ASSEBGUIM Central.</p>
+          <p className="text-sm text-slate-500">Direction Générale de Suivi Académique de l'Ambassade de Guinée-Bissau.</p>
         </div>
         <div className="flex items-center gap-2 self-start md:self-auto">
           <button

@@ -39,7 +39,7 @@ export default function Header({ isAdmin, onLoginClick, onLogoutClick }: HeaderP
           <div>
             <div className="flex items-center space-x-1.5 sm:space-x-2">
               <h1 className="text-sm sm:text-lg md:text-2xl font-bold tracking-tight text-white font-sans uppercase">
-                Portal <span className="text-yellow-400">ASSEBGUIM</span> Central
+                Portail Consulaire - <span className="text-yellow-400">Ambassade de Guinée-Bissau</span>
               </h1>
               {isAdmin && (
                 <span className="bg-teal-500/20 border border-teal-400/50 text-teal-300 text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-full flex items-center gap-1 font-mono shrink-0">
@@ -48,7 +48,7 @@ export default function Header({ isAdmin, onLoginClick, onLogoutClick }: HeaderP
               )}
             </div>
             <p className="text-[9px] sm:text-xs text-white/85 font-sans tracking-wide leading-tight hidden sm:block">
-              Association des Étudiants de Guinée-Bissau au Maroc • Soutien, Recensement
+              Ambassade de la République de Guinée-Bissau au Royaume du Maroc • Recensement Consulaire
             </p>
           </div>
         </div>

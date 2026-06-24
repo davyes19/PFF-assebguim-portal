@@ -157,7 +157,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-955 tracking-tight">Recensement Conclu avec Succès !</h2>
         <p className="text-slate-600 mt-3 max-w-md mx-auto text-sm sm:text-base">
-          Merci beaucoup, <strong>{formData.fullName}</strong>. Votre inscription aide la direction nationale d'ASSEBGUIM Central à cartographier les étudiants au Maroc et à fournir un soutien ciblé.
+          Merci beaucoup, <strong>{formData.fullName}</strong>. Votre inscription aide les services consulaires de l'Ambassade de Guinée-Bissau au Maroc à cartographier les étudiants et à fournir un soutien ciblé.
         </p>
 
         <div className="my-8 p-5 bg-slate-50 rounded-xl border border-slate-200 text-left space-y-3 font-sans text-xs">
@@ -437,7 +437,7 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 text-xs text-amber-800 leading-relaxed font-sans">
               <Info className="h-5 w-5 shrink-0 mt-0.5 text-amber-600" />
               <div>
-                <span className="font-bold uppercase tracking-wide">Confidentialité Garantie :</span> Pas d'importation de fichiers. Pour la protection juridique et la stabilité du portail, l'ASSEBGUIM recueille exclusivement les numéros textuels et les dates d'expiration de votre documentation. Ne téléversez pas de photos ou de PDF.
+                <span className="font-bold uppercase tracking-wide">Confidentialité Garantie :</span> Pas d'importation de fichiers. Pour la protection juridique et la stabilité du portail, l'Ambassade recueille exclusivement les numéros textuels et les dates d'expiration de votre documentation. Ne téléversez pas de photos ou de PDF.
               </div>
             </div>
 

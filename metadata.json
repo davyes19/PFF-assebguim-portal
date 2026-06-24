@@ -1,6 +1,6 @@
 {
-  "name": "Portal ASSEBGUIM Central",
-  "description": "Portal de Apoio Estudantil, Censo e Mapeamento para a Associação de Estudantes da Guiné-Bissau em Marrocos.",
+  "name": "Portail Consulaire - Ambassade de Guinée-Bissau au Maroc",
+  "description": "Portail de Recensement Consulaire pour l'Ambassade de la République de Guinée-Bissau au Royaume du Maroc.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

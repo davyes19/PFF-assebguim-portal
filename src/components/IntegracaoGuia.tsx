@@ -177,7 +177,7 @@ export default function IntegracaoGuia() {
                 🇬🇼 Commémorations Nationales de la Guinée-Bissau
               </h4>
               <p className="text-xs text-slate-600 leading-relaxed mb-2">
-                Bien qu'elles ne soient pas fériées au Maroc, ce sont des journées sacrées pour notre communauté patriote que l'ASSEBGUIM Central honore chaque année :
+                Bien qu'elles ne soient pas fériées au Maroc, ce sont des journées sacrées pour notre communauté que l'Ambassade honore chaque année :
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-655 font-mono">
                 <p><strong>• 20 Janvier :</strong> Jour des Héros Nationaux (Dia dos Heróis Nacionais / Commémoration d&apos;Amílcar Cabral)</p>
@@ -219,7 +219,7 @@ export default function IntegracaoGuia() {
     {
       id: "emergencias",
       title: "Contacts d'Urgence",
-      subtitle: "Ambassade & ASSEBGUIM Central",
+      subtitle: "Ambassade de Guinée-Bissau au Maroc",
       icon: Phone,
       content: (
         <div className="space-y-4 text-sm leading-relaxed text-slate-700">
@@ -239,7 +239,7 @@ export default function IntegracaoGuia() {
             </div>
 
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 font-sans">
-              <h5 className="text-xs font-bold text-[#009E49] uppercase tracking-wider font-mono">Direction Nationale ASSEBGUIM Central</h5>
+              <h5 className="text-xs font-bold text-[#009E49] uppercase tracking-wider font-mono">Association des Étudiants (Partenaire)</h5>
               <p className="text-[11px] text-slate-500 mt-1">Front Uni de Soutien aux Étudiants Guinéens</p>
               <div className="mt-3 text-xs font-mono space-y-1 text-slate-655">
                 <p>👤 Président National : +212 630-826236</p>
