@@ -227,18 +227,18 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
       (s.birthPlace || "").trim() || "N/D",
       (s.nationality || "").trim() || "N/D",
       (s.email || "").trim().toLowerCase() || "N/D",
-      (s.phone || "").trim() || "N/D",
+      s.phone ? `="${s.phone.trim()}"` : "N/D",
       (s.city || "").trim() || "N/D",
       (s.university || "").trim() || "N/D",
       (s.course || "").trim() || "N/D",
       (s.degree || "").trim() || "N/D",
       (s.scholarshipType || "").trim() || "N/D",
       s.arrivalDate ? formatDate(s.arrivalDate) : "N/D",
-      (s.passportNumber || "").trim().toUpperCase() || "N/D",
+      s.passportNumber ? `="${s.passportNumber.trim().toUpperCase()}"` : "N/D",
       s.passportExpiry ? formatDate(s.passportExpiry) : "N/D",
-      (s.residenceCardNumber || "").trim().toUpperCase() || "N/D",
+      s.residenceCardNumber ? `="${s.residenceCardNumber.trim().toUpperCase()}"` : "N/D",
       s.residenceCardExpiry ? formatDate(s.residenceCardExpiry) : "N/D",
-      (s.consularCardNumber || "").trim().toUpperCase() || "N/D",
+      s.consularCardNumber ? `="${s.consularCardNumber.trim().toUpperCase()}"` : "N/D",
       s.consularCardExpiry ? formatDate(s.consularCardExpiry) : "N/D"
     ]);
 
