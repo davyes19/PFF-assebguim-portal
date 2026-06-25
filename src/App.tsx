@@ -41,6 +41,13 @@ export interface SupportTicket {
   createdAt: string;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("census");
   const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem("admin_token"));
@@ -50,11 +57,29 @@ export default function App() {
   // Data States
   const [students, setStudents] = useState<Student[]>([]);
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const loadAnnouncements = async () => {
+    try {
+      const res = await fetch("/api/announcements");
+      if (res.ok) {
+        const data = await res.json();
+        setAnnouncements(data);
+      }
+    } catch (e) {
+      console.error("Error loading announcements:", e);
+    }
+  };
+
+  useEffect(() => {
+    loadAnnouncements();
+  }, []);
+
   // Load students list and tickets list
   const loadDatabaseData = async () => {
+    loadAnnouncements();
     if (!adminToken) {
       setLoading(false);
       return;
@@ -161,7 +186,7 @@ export default function App() {
           <div className="w-full h-full">
             {activeTab === "census" && (
               <div className="transition-opacity duration-300 animate-fade-in">
-                <CensusForm onSuccess={loadDatabaseData} />
+                <CensusForm onSuccess={loadDatabaseData} announcements={announcements} />
               </div>
             )}
 
@@ -189,6 +214,8 @@ export default function App() {
                   tickets={tickets} 
                   adminToken={adminToken}
                   onRefresh={loadDatabaseData} 
+                  announcements={announcements}
+                  onRefreshAnnouncements={loadAnnouncements}
                 />
               </div>
             )}

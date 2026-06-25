@@ -48,6 +48,13 @@ export interface SupportTicket {
   createdAt: string;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}
+
 class Database {
   async getStudents(): Promise<Student[]> {
     const { data, error } = await supabase.from('students').select('*');
@@ -95,6 +102,24 @@ class Database {
 
   async deleteStudent(id: string): Promise<boolean> {
     const { error } = await supabase.from('students').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    return true;
+  }
+
+  async getAnnouncements(): Promise<Announcement[]> {
+    const { data, error } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data || [];
+  }
+
+  async addAnnouncement(announcementData: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> {
+    const { data, error } = await supabase.from('announcements').insert([announcementData]).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  async deleteAnnouncement(id: string): Promise<boolean> {
+    const { error } = await supabase.from('announcements').delete().eq('id', id);
     if (error) throw new Error(error.message);
     return true;
   }

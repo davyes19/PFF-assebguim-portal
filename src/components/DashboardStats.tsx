@@ -6,7 +6,8 @@ import {
 } from "recharts";
 import { 
   Users, Award, HelpCircle, Search, MapPin, Calendar, 
-  GraduationCap, Download, RefreshCw, Eye, EyeOff, CheckCircle, Clock, AlertTriangle, ShieldCheck, Edit, X 
+  GraduationCap, Download, RefreshCw, Eye, EyeOff, CheckCircle, Clock, AlertTriangle, ShieldCheck, Edit, X,
+  Megaphone, Trash2
 } from "lucide-react";
 
 interface DashboardStatsProps {
@@ -14,6 +15,8 @@ interface DashboardStatsProps {
   tickets: SupportTicket[];
   adminToken?: string | null;
   onRefresh: () => void;
+  announcements?: any[];
+  onRefreshAnnouncements?: () => void;
 }
 
 const formatDate = (dateStr: string) => {
@@ -29,7 +32,14 @@ const formatDate = (dateStr: string) => {
 
 const COLORS = ["#f59e0b", "#10b981", "#3b82f6", "#8b5cf6", "#ec4899", "#6366f1", "#f43f5e"];
 
-export default function DashboardStats({ students, tickets, adminToken, onRefresh }: DashboardStatsProps) {
+export default function DashboardStats({ 
+  students, 
+  tickets, 
+  adminToken, 
+  onRefresh,
+  announcements,
+  onRefreshAnnouncements
+}: DashboardStatsProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterYear, setFilterYear] = useState<string>("All");
   const [showPassportInfo, setShowPassportInfo] = useState<Record<string, boolean>>({});
@@ -39,6 +49,13 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
   const [editForm, setEditForm] = useState<Student | null>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
+
+  // Announcement States
+  const [annTitle, setAnnTitle] = useState("");
+  const [annContent, setAnnContent] = useState("");
+  const [annPublishLoading, setAnnPublishLoading] = useState(false);
+  const [annFormError, setAnnFormError] = useState<string | null>(null);
+  const [annFormSuccess, setAnnFormSuccess] = useState<string | null>(null);
 
   const editCities = [
     "Agadir", "Al Hoceima", "Asilah", "Béni Mellal", "Berkane", "Berrechid", "Boujdour", 
@@ -137,6 +154,72 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
       setEditError(err.message || "Erreur lors de la suppression.");
     } finally {
       setEditLoading(false);
+    }
+  };
+
+  const handlePublishAnnouncement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!annTitle || !annContent) return;
+
+    setAnnPublishLoading(true);
+    setAnnFormError(null);
+    setAnnFormSuccess(null);
+
+    try {
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (adminToken) {
+        headers["Authorization"] = adminToken;
+      }
+
+      const response = await fetch("/api/announcements", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ title: annTitle, content: annContent })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue.");
+      }
+
+      setAnnTitle("");
+      setAnnContent("");
+      setAnnFormSuccess("Communiqué publié avec succès !");
+      if (onRefreshAnnouncements) {
+        onRefreshAnnouncements();
+      }
+    } catch (err: any) {
+      setAnnFormError(err.message || "Erreur de conexão.");
+    } finally {
+      setAnnPublishLoading(false);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id: string) => {
+    const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer ce communiqué ?");
+    if (!confirmDelete) return;
+
+    try {
+      const headers: HeadersInit = {};
+      if (adminToken) {
+        headers["Authorization"] = adminToken;
+      }
+
+      const response = await fetch(`/api/announcements/${id}`, {
+        method: "DELETE",
+        headers
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue.");
+      }
+
+      if (onRefreshAnnouncements) {
+        onRefreshAnnouncements();
+      }
+    } catch (err: any) {
+      alert(err.message || "Erreur de conexão.");
     }
   };
 
@@ -480,6 +563,99 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
           En attente d'inscriptions sur le recensement pour générer les statistiques.
         </div>
       )}
+
+      {/* Announcements (Communiqués) Section */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <div className="border-b border-slate-200 pb-4 mb-5 flex justify-between items-center">
+          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 font-sans">
+            <Megaphone className="h-4 w-4 text-amber-500" />
+            Espace Communiqués de l'Ambassade
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Create Announcement Form */}
+          <form onSubmit={handlePublishAnnouncement} className="space-y-4">
+            <h4 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Publier un nouveau communiqué</h4>
+            
+            {annFormError && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-2.5 rounded-lg text-[11px] font-sans">
+                {annFormError}
+              </div>
+            )}
+            
+            {annFormSuccess && (
+              <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 p-2.5 rounded-lg text-[11px] font-sans">
+                {annFormSuccess}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Titre du Communiqué</label>
+              <input
+                type="text"
+                placeholder="Ex: Avis aux boursiers de l'AMCI"
+                value={annTitle}
+                onChange={(e) => setAnnTitle(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Message / Contenu</label>
+              <textarea
+                placeholder="Écrivez le message ici..."
+                value={annContent}
+                onChange={(e) => setAnnContent(e.target.value)}
+                rows={4}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={annPublishLoading}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition duration-300 transform active:scale-95 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              {annPublishLoading ? "Publication..." : "Publier le Communiqué"}
+            </button>
+          </form>
+
+          {/* Active Announcements List */}
+          <div className="lg:col-span-2 space-y-4">
+            <h4 className="font-bold text-slate-700 text-xs uppercase tracking-wider">Communiqués Actifs</h4>
+            {announcements && announcements.length > 0 ? (
+              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                {announcements.map((ann) => (
+                  <div key={ann.id} className="bg-slate-50/50 border border-slate-200 rounded-xl p-4 flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h5 className="font-bold text-slate-800 text-xs">{ann.title}</h5>
+                      <p className="text-slate-655 text-[11px] whitespace-pre-wrap leading-relaxed">{ann.content}</p>
+                      <p className="text-[9px] text-slate-400 font-mono">
+                        Publié le : {new Date(ann.created_at).toLocaleDateString("fr-FR", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteAnnouncement(ann.id)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition shrink-0 cursor-pointer"
+                      title="Supprimer ce communiqué"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-slate-50/50 border border-slate-200 border-dashed rounded-xl p-8 text-center text-slate-400 text-xs">
+                Aucun communiqué actif pour le moment.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Search Tracker & Students Database Table */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" id="students-table-section">

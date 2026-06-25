@@ -190,8 +190,40 @@ app.patch("/api/tickets/:id", verifyAdmin, async (req, res) => {
     res.status(500).json({ error: "Erreur lors de la mise à jour do statut du ticket : " + e.message });
   }
 });
+// GET /api/announcements - Get all active announcements (Public)
+app.get("/api/announcements", async (req, res) => {
+  try {
+    const announcements = await db.getAnnouncements();
+    res.json(announcements);
+  } catch (e: any) {
+    res.status(500).json({ error: "Erreur lors de la recherche des communiqués : " + e.message });
+  }
+});
 
+// POST /api/announcements - Add a new announcement (Admin only, protected)
+app.post("/api/announcements", verifyAdmin, async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    if (!title || !content) {
+      return res.status(400).json({ error: "Le titre et le contenu sont obligatoires." });
+    }
+    const newAnnouncement = await db.addAnnouncement({ title, content });
+    res.status(201).json({ success: true, message: "Communiqué publié avec succès !", announcement: newAnnouncement });
+  } catch (e: any) {
+    res.status(500).json({ error: "Erreur lors de la publication du communiqué : " + e.message });
+  }
+});
 
+// DELETE /api/announcements/:id - Delete an announcement (Admin only, protected)
+app.delete("/api/announcements/:id", verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.deleteAnnouncement(id);
+    res.json({ success: true, message: "Communiqué supprimé avec succès !" });
+  } catch (e: any) {
+    res.status(500).json({ error: "Erreur lors de la suppression du communiqué : " + e.message });
+  }
+});
 
 // GET /api/ping - Public health check route to keep Supabase database active
 app.get("/api/ping", async (req, res) => {
