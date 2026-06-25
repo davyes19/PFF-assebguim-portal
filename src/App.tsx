@@ -27,6 +27,8 @@ export interface Student {
   passportExpiry: string;
   residenceCardNumber: string;
   residenceCardExpiry: string;
+  consularCardNumber: string;
+  consularCardExpiry: string;
 }
 
 export interface SupportTicket {

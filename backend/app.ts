@@ -66,7 +66,9 @@ app.post("/api/students", async (req, res) => {
       passportNumber,
       passportExpiry,
       residenceCardNumber,
-      residenceCardExpiry
+      residenceCardExpiry,
+      consularCardNumber,
+      consularCardExpiry
     } = req.body;
 
     // Todos os campos são opcionais agora
@@ -89,7 +91,9 @@ app.post("/api/students", async (req, res) => {
       passportNumber,
       passportExpiry: passportExpiry || "",
       residenceCardNumber: residenceCardNumber || "",
-      residenceCardExpiry: residenceCardExpiry || ""
+      residenceCardExpiry: residenceCardExpiry || "",
+      consularCardNumber: consularCardNumber || "",
+      consularCardExpiry: consularCardExpiry || ""
     });
 
     res.status(201).json({ 
@@ -116,6 +120,17 @@ app.put("/api/students/:id", verifyAdmin, async (req, res) => {
     res.json({ success: true, message: "Fiche étudiant mise à jour avec succès !", student: updated });
   } catch (e: any) {
     res.status(500).json({ error: "Erreur lors de la mise à jour de la fiche étudiant : " + e.message });
+  }
+});
+
+// DELETE /api/students/:id - Delete a student (Admin only, protected)
+app.delete("/api/students/:id", verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.deleteStudent(id);
+    res.json({ success: true, message: "Fiche étudiant supprimée avec succès !" });
+  } catch (e: any) {
+    res.status(500).json({ error: "Erreur lors de la suppression de la fiche étudiant : " + e.message });
   }
 });
 

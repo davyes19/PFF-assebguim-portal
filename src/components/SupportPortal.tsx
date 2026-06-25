@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SupportTicket } from "../../backend/db";
-import { 
-  LifeBuoy, Calendar, Clock, AlertCircle, CheckCircle, 
+import {
+  LifeBuoy, Calendar, Clock, AlertCircle, CheckCircle,
   Send, User, ClipboardList, Info, HelpCircle
 } from "lucide-react";
 
@@ -125,14 +125,14 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in" id="support-portal-view">
-      
+
       {/* LEFT COLUMN: Submit a Case (Student View) */}
       <section className="lg:col-span-5 h-fit text-xs">
         <div className="bg-white border border-slate-200 rounded-2xl p-5 md:p-6 space-y-5 shadow-sm">
           <div>
             <span className="bg-[#CE1126]/10 text-[#CE1126] font-bold px-2 py-1 rounded font-mono text-[10px] uppercase">HELPDESK</span>
             <h3 className="text-base sm:text-lg font-bold text-slate-800 mt-2 flex items-center gap-1.5">
-              <LifeBuoy className="h-5 w-5 text-yellow-500 shrink-0" /> Ouvrir un Ticket d'Assistance
+              <LifeBuoy className="h-5 w-5 text-yellow-500 shrink-0" /> Requêtes aux Services
             </h3>
             <p className="text-slate-500 mt-1">Notre direction analysera votre cas dans un délai de 48 heures maximum.</p>
           </div>
@@ -220,8 +220,8 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
               {isAdmin ? "File de Traitement Générale (Admin)" : "Historique des Demandes Récentes"}
             </h3>
             <p className="text-slate-500 mt-1">
-              {isAdmin 
-                ? "Résolution et suivi des besoins sociaux et consulaires des étudiants inscrits." 
+              {isAdmin
+                ? "Résolution et suivi des besoins sociaux et consulaires des étudiants inscrits."
                 : "Ci-dessous figurent les tickets déclarés par les étudiants en temps réel."}
             </p>
           </div>
@@ -229,8 +229,8 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
           <div className="space-y-4 overflow-y-auto max-h-[550px]" id="tickets-history-container">
             {tickets.length > 0 ? (
               [...tickets].reverse().map((tk) => (
-                <div 
-                  key={tk.id} 
+                <div
+                  key={tk.id}
                   className="bg-slate-50/50 border border-slate-200 rounded-xl p-4 space-y-3 hover:border-slate-300 transition"
                   id={`ticket-card-${tk.id}`}
                 >
@@ -254,7 +254,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
 
                   <div className="border-t border-slate-200 pt-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] font-sans">
                     <p className="text-slate-500 flex items-center gap-1.5">
-                      <span className="font-semibold text-slate-700">Étudiant :</span> {tk.studentName} 
+                      <span className="font-semibold text-slate-700">Étudiant :</span> {tk.studentName}
                       <span className="text-slate-400 font-mono">({tk.email})</span>
                     </p>
 
@@ -263,33 +263,30 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
                       <div className="flex items-center space-x-1 self-end sm:self-auto bg-white border border-slate-200 rounded-lg p-1 shrink-0">
                         <button
                           onClick={() => handleUpdateStatus(tk.id, "Pendente")}
-                          className={`px-2 py-1 rounded text-[10px] font-semibold transition cursor-pointer ${
-                            tk.status === "Pendente" 
-                              ? "bg-slate-100 text-slate-700 shadow-xs" 
+                          className={`px-2 py-1 rounded text-[10px] font-semibold transition cursor-pointer ${tk.status === "Pendente"
+                              ? "bg-slate-100 text-slate-700 shadow-xs"
                               : "text-slate-400 hover:text-slate-650"
-                          }`}
+                            }`}
                           title="Remettre en attente"
                         >
                           En attente
                         </button>
                         <button
                           onClick={() => handleUpdateStatus(tk.id, "Em Resolução")}
-                          className={`px-2 py-1 rounded text-[10px] font-semibold transition cursor-pointer ${
-                            tk.status === "Em Resolução" 
-                              ? "bg-amber-100 text-amber-800 shadow-xs" 
+                          className={`px-2 py-1 rounded text-[10px] font-semibold transition cursor-pointer ${tk.status === "Em Resolução"
+                              ? "bg-amber-100 text-amber-800 shadow-xs"
                               : "text-slate-400 hover:text-amber-700"
-                          }`}
+                            }`}
                           title="Mettre en traitement"
                         >
                           Soutien
                         </button>
                         <button
                           onClick={() => handleUpdateStatus(tk.id, "Resolvido")}
-                          className={`px-2 py-1 rounded text-[10px] font-semibold transition cursor-pointer ${
-                            tk.status === "Resolvido" 
-                              ? "bg-emerald-100 text-emerald-800 shadow-xs" 
+                          className={`px-2 py-1 rounded text-[10px] font-semibold transition cursor-pointer ${tk.status === "Resolvido"
+                              ? "bg-emerald-100 text-emerald-800 shadow-xs"
                               : "text-slate-400 hover:text-emerald-700"
-                          }`}
+                            }`}
                           title="Marquer comme résolu"
                         >
                           Résolu

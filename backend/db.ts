@@ -34,6 +34,8 @@ export interface Student {
   passportExpiry: string;
   residenceCardNumber: string;
   residenceCardExpiry: string;
+  consularCardNumber: string;
+  consularCardExpiry: string;
 }
 
 export interface SupportTicket {
@@ -89,6 +91,12 @@ class Database {
     const { data, error } = await supabase.from('students').update(studentData).eq('id', id).select().single();
     if (error) throw new Error(error.message);
     return data;
+  }
+
+  async deleteStudent(id: string): Promise<boolean> {
+    const { error } = await supabase.from('students').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    return true;
   }
 
   async ping(): Promise<boolean> {

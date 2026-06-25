@@ -29,7 +29,9 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
     passportNumber: "",
     passportExpiry: "",
     residenceCardNumber: "En Cours",
-    residenceCardExpiry: ""
+    residenceCardExpiry: "",
+    consularCardNumber: "",
+    consularCardExpiry: ""
   });
 
   const cities = [
@@ -135,7 +137,9 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
       passportNumber: "",
       passportExpiry: "",
       residenceCardNumber: "En Cours",
-      residenceCardExpiry: ""
+      residenceCardExpiry: "",
+      consularCardNumber: "",
+      consularCardExpiry: ""
     });
     setStep(1);
     setSubmitted(false);
@@ -375,15 +379,38 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                 <label className="block text-xs font-bold text-slate-650 mb-1.5">Niveau / Diplôme Académique (Optionnel)</label>
                 <select
                   name="degree"
-                  value={formData.degree}
-                  onChange={handleInputChange}
+                  value={["Licence", "Master", "Doctorat", "Technicien Supérieur"].includes(formData.degree) ? formData.degree : "Autre"}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "Autre") {
+                      setFormData(prev => ({ ...prev, degree: "" }));
+                    } else {
+                      setFormData(prev => ({ ...prev, degree: val }));
+                    }
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
                 >
-                  {degrees.map(deg => (
-                    <option key={deg} value={deg}>{deg}</option>
-                  ))}
+                  <option value="Licence">Licence</option>
+                  <option value="Master">Master</option>
+                  <option value="Doctorat">Doctorat</option>
+                  <option value="Technicien Supérieur">Technicien Supérieur</option>
+                  <option value="Autre">Autre (Préciser...)</option>
                 </select>
               </div>
+
+              {!["Licence", "Master", "Doctorat", "Technicien Supérieur"].includes(formData.degree) && (
+                <div className="animate-fade-in">
+                  <label className="block text-xs font-bold text-slate-650 mb-1.5">Précisez votre Niveau Académique</label>
+                  <input
+                    type="text"
+                    name="degree"
+                    placeholder="Ex: Post-Doctorat, Classe Préparatoire, etc."
+                    value={formData.degree === "Autre" ? "" : formData.degree}
+                    onChange={handleInputChange}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                  />
+                </div>
+              )}
 
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-slate-650 mb-1.5">Université ou Établissement d'Enseignement (Optionnel)</label>
@@ -484,6 +511,29 @@ export default function CensusForm({ onSuccess }: CensusFormProps) {
                   type="date"
                   name="residenceCardExpiry"
                   value={formData.residenceCardExpiry}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Numéro de Carte Consulaire (Optionnel)</label>
+                <input
+                  type="text"
+                  name="consularCardNumber"
+                  placeholder="Ex: CC12345"
+                  value={formData.consularCardNumber}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono uppercase"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-650 mb-1.5">Date d'Expiration de la Carte Consulaire (Optionnel)</label>
+                <input
+                  type="date"
+                  name="consularCardExpiry"
+                  value={formData.consularCardExpiry}
                   onChange={handleInputChange}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono"
                 />

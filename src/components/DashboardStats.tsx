@@ -104,6 +104,42 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
     }
   };
 
+  const handleDeleteStudent = async () => {
+    if (!editingStudent) return;
+    const confirmDelete = window.confirm(
+      `Êtes-vous sûr de vouloir supprimer définitivement l'étudiant "${editingStudent.fullName}" ? Cette action est irréversible.`
+    );
+    if (!confirmDelete) return;
+
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const headers: HeadersInit = {};
+      if (adminToken) {
+        headers["Authorization"] = adminToken;
+      }
+
+      const response = await fetch(`/api/students/${editingStudent.id}`, {
+        method: "DELETE",
+        headers
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue lors de la suppression.");
+      }
+
+      setEditingStudent(null);
+      setEditForm(null);
+      onRefresh(); // Reload main students list
+    } catch (err: any) {
+      setEditError(err.message || "Erreur lors de la suppression.");
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   // Calculations & KPIs
   const totalStudents = students.length;
   const amciScholars = students.filter(s => s.scholarshipType && s.scholarshipType.toLowerCase().includes("amci")).length;
@@ -181,7 +217,8 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
     const headers = [
       "N°", "Nom Complet", "Date de Naissance", "Lieu de Naissance", "Nationalité", 
       "Email", "Téléphone", "Ville", "Université", "Filière", "Diplôme", "Bourse", 
-      "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour"
+      "Date Arrivée", "Passeport", "Expiration Passeport", "Séjour", "Expiration Séjour",
+      "Carte Consulaire", "Expiration Carte Consulaire"
     ];
     const rows = students.map((s, index) => [
       (index + 1).toString(),
@@ -200,7 +237,9 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
       (s.passportNumber || "").trim().toUpperCase() || "N/D",
       s.passportExpiry ? formatDate(s.passportExpiry) : "N/D",
       (s.residenceCardNumber || "").trim().toUpperCase() || "N/D",
-      s.residenceCardExpiry ? formatDate(s.residenceCardExpiry) : "N/D"
+      s.residenceCardExpiry ? formatDate(s.residenceCardExpiry) : "N/D",
+      (s.consularCardNumber || "").trim().toUpperCase() || "N/D",
+      s.consularCardExpiry ? formatDate(s.consularCardExpiry) : "N/D"
     ]);
 
     // Use semicolon as separator for better compatibility with Excel (French/Portuguese region settings)
@@ -488,6 +527,7 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
                   <th className="p-4 uppercase tracking-wider font-semibold">Bourse / Financement</th>
                   <th className="p-4 uppercase tracking-wider font-semibold">Passeport</th>
                   <th className="p-4 uppercase tracking-wider font-semibold">Carte de Séjour</th>
+                  <th className="p-4 uppercase tracking-wider font-semibold">Carte Consulaire</th>
                   <th className="p-4 uppercase tracking-wider font-semibold text-right">Actions</th>
                 </tr>
               </thead>
@@ -546,7 +586,7 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
                             <button
                               onClick={() => togglePassportDetails(s.id)}
                               className="text-slate-400 hover:text-slate-700 p-1"
-                              title="Voir numéro complet"
+                              title="Voir número complet"
                             >
                               {isVisible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                             </button>
@@ -566,9 +606,26 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
                             Exp: {s.residenceCardExpiry || "N/A"}
                           </p>
                           {s.residenceCardNumber === "En Cours" || s.residenceCardNumber === "Em Processo" ? (
-                            <span className="inline-block bg-slate-100 text-slate-600 font-mono px-1.5 py-0.5 rounded text-[10px]">En attente du titre</span>
+                            <span className="inline-block bg-slate-100 text-slate-650 font-mono px-1.5 py-0.5 rounded text-[10px]">En attente du titre</span>
                           ) : (
                             getExpirationBadge(s.residenceCardExpiry)
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-4 whitespace-nowrap">
+                        <div className="space-y-1">
+                          {s.consularCardNumber ? (
+                            <>
+                              <code className="bg-slate-50 text-emerald-700 px-1.5 py-1 rounded font-mono font-bold text-xs border border-slate-200 uppercase">
+                                {s.consularCardNumber}
+                              </code>
+                              <p className="text-slate-500 text-[10px] font-mono leading-tight mt-1.5">
+                                Exp: {s.consularCardExpiry || "N/A"}
+                              </p>
+                              {getExpirationBadge(s.consularCardExpiry)}
+                            </>
+                          ) : (
+                            <span className="text-slate-450 font-mono text-[10px]">Aucune</span>
                           )}
                         </div>
                       </td>
@@ -742,17 +799,38 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
                     <label className="block text-slate-605 font-bold mb-1.5">Niveau / Diplôme Académique</label>
                     <select
                       name="degree"
-                      value={editForm.degree || "Licence"}
-                      onChange={handleEditInputChange}
+                      value={["Licence", "Master", "Doctorat", "Technicien Supérieur"].includes(editForm.degree || "") ? editForm.degree || "Licence" : "Autre"}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "Autre") {
+                          setEditForm(prev => prev ? { ...prev, degree: "" } : null);
+                        } else {
+                          setEditForm(prev => prev ? { ...prev, degree: val } : null);
+                        }
+                      }}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
                     >
                       <option value="Licence">Licence</option>
                       <option value="Master">Master</option>
                       <option value="Doctorat">Doctorat</option>
                       <option value="Technicien Supérieur">Technicien Supérieur</option>
-                      <option value="Autre">Autre</option>
+                      <option value="Autre">Autre (Préciser...)</option>
                     </select>
                   </div>
+
+                  {!["Licence", "Master", "Doctorat", "Technicien Supérieur"].includes(editForm.degree || "") && (
+                    <div className="animate-fade-in md:col-span-2">
+                      <label className="block text-slate-605 font-bold mb-1.5">Précisez le Niveau Académique</label>
+                      <input
+                        type="text"
+                        name="degree"
+                        placeholder="Ex: Post-Doctorat, Classe Préparatoire, etc."
+                        value={editForm.degree === "Autre" ? "" : editForm.degree}
+                        onChange={handleEditInputChange}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+                      />
+                    </div>
+                  )}
                   <div className="md:col-span-2">
                     <label className="block text-slate-605 font-bold mb-1.5">Université / Établissement d'Enseignement</label>
                     <input
@@ -832,30 +910,63 @@ export default function DashboardStats({ students, tickets, adminToken, onRefres
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono font-bold"
                     />
                   </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Carte Consulaire (Optionnel)</label>
+                    <input
+                      type="text"
+                      name="consularCardNumber"
+                      value={editForm.consularCardNumber || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono uppercase font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-605 font-bold mb-1.5">Expiration Carte Consulaire (Optionnel)</label>
+                    <input
+                      type="date"
+                      name="consularCardExpiry"
+                      value={editForm.consularCardExpiry || ""}
+                      onChange={handleEditInputChange}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-mono font-bold"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Buttons */}
-              <div className="border-t border-slate-200 pt-4 flex items-center justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => { setEditingStudent(null); setEditForm(null); }}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition cursor-pointer"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={editLoading}
-                  className="px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl transition-all duration-300 transform active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-sm"
-                >
-                  {editLoading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-950 border-t-transparent" />
-                  ) : (
-                    <ShieldCheck className="h-4.5 w-4.5" />
-                  )}
-                  <span>Sauvegarder</span>
-                </button>
+              <div className="border-t border-slate-200 pt-4 flex items-center justify-between">
+                <div>
+                  <button
+                    type="button"
+                    onClick={handleDeleteStudent}
+                    disabled={editLoading}
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition duration-300 transform active:scale-95 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <X className="h-4.5 w-4.5" />
+                    <span>Supprimer la fiche</span>
+                  </button>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => { setEditingStudent(null); setEditForm(null); }}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition cursor-pointer"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={editLoading}
+                    className="px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl transition-all duration-300 transform active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-sm"
+                  >
+                    {editLoading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-950 border-t-transparent" />
+                    ) : (
+                      <ShieldCheck className="h-4.5 w-4.5" />
+                    )}
+                    <span>Sauvegarder</span>
+                  </button>
+                </div>
               </div>
             </form>
           </div>
