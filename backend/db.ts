@@ -53,6 +53,8 @@ export interface Announcement {
   title: string;
   content: string;
   created_at: string;
+  attachment_url?: string | null;
+  attachment_name?: string | null;
 }
 
 class Database {

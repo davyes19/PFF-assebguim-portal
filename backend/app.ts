@@ -1,5 +1,5 @@
 import express from "express";
-import { db } from "./db.js";
+import { db, supabase } from "./db.js";
 
 import dotenv from "dotenv";
 
@@ -240,11 +240,50 @@ app.get("/api/announcements", async (req, res) => {
 // POST /api/announcements - Add a new announcement (Admin only, protected)
 app.post("/api/announcements", verifyAdmin, async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, fileData, fileName } = req.body;
     if (!title || !content) {
       return res.status(400).json({ error: "Le titre et le contenu sont obligatoires." });
     }
-    const newAnnouncement = await db.addAnnouncement({ title, content });
+
+    let attachmentUrl: string | null = null;
+    let attachmentName: string | null = null;
+
+    if (fileData && fileName) {
+      const matches = fileData.match(/^data:(.+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        return res.status(400).json({ error: "Format de fichier invalide." });
+      }
+
+      const contentType = matches[1];
+      const base64Data = matches[2];
+      const buffer = Buffer.from(base64Data, 'base64');
+      const uniqueFileName = `${Date.now()}_${fileName.replace(/\s+/g, "_")}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("announcements")
+        .upload(uniqueFileName, buffer, {
+          contentType: contentType,
+          duplex: "half"
+        });
+
+      if (uploadError) {
+        return res.status(500).json({ error: "Erreur lors du téléchargement du fichier : " + uploadError.message });
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("announcements")
+        .getPublicUrl(uniqueFileName);
+
+      attachmentUrl = publicUrlData.publicUrl;
+      attachmentName = fileName;
+    }
+
+    const newAnnouncement = await db.addAnnouncement({
+      title,
+      content,
+      attachment_url: attachmentUrl,
+      attachment_name: attachmentName
+    });
     res.status(201).json({ success: true, message: "Communiqué publié avec succès !", announcement: newAnnouncement });
   } catch (e: any) {
     res.status(500).json({ error: "Erreur lors de la publication du communiqué : " + e.message });

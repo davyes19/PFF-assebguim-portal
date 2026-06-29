@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { 
   HeartHandshake, FileCheck, Phone, ShieldAlert, Award, 
   MapPin, HelpCircle, ArrowRight, ClipboardList, BookOpen,
-  Home, Calendar, Megaphone
+  Home, Calendar, Megaphone, Paperclip
 } from "lucide-react";
 
 interface GuideSection {
@@ -275,7 +275,20 @@ export default function IntegracaoGuia({ announcements }: IntegracaoGuiaProps) {
               <div key={ann.id} className="bg-white border border-amber-200/60 rounded-xl p-4 shadow-2xs">
                 <h4 className="font-bold text-slate-800 text-sm">{ann.title}</h4>
                 <p className="text-slate-655 text-xs mt-1.5 whitespace-pre-wrap leading-relaxed">{ann.content}</p>
-                <p className="text-[10px] text-slate-400 mt-2 font-mono">
+                {ann.attachment_url && (
+                  <div className="mt-3 pt-3 border-t border-slate-100 flex">
+                    <a 
+                      href={ann.attachment_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-amber-800 hover:underline font-bold bg-amber-100/60 hover:bg-amber-100 px-3 py-1.5 rounded-lg transition"
+                    >
+                      <Paperclip className="h-3.5 w-3.5" />
+                      <span>{ann.attachment_name || "Télécharger la pièce jointe"}</span>
+                    </a>
+                  </div>
+                )}
+                <p className="text-[10px] text-slate-400 mt-2.5 font-mono">
                   Publié le : {new Date(ann.created_at).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>

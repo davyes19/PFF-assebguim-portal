@@ -7,7 +7,7 @@ import {
 import { 
   Users, Award, HelpCircle, Search, MapPin, Calendar, 
   GraduationCap, Download, RefreshCw, Eye, EyeOff, CheckCircle, Clock, AlertTriangle, ShieldCheck, Edit, X,
-  Megaphone, Trash2, Lock
+  Megaphone, Trash2, Lock, Paperclip
 } from "lucide-react";
 
 interface DashboardStatsProps {
@@ -66,6 +66,10 @@ export default function DashboardStats({
   const [pwLoading, setPwLoading] = useState(false);
   const [pwError, setPwError] = useState<string | null>(null);
   const [pwSuccess, setPwSuccess] = useState<string | null>(null);
+
+  // File Attachment States
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileBase64, setFileBase64] = useState<string | null>(null);
 
   const editCities = [
     "Agadir", "Al Hoceima", "Asilah", "Béni Mellal", "Berkane", "Berrechid", "Boujdour", 
@@ -167,6 +171,28 @@ export default function DashboardStats({
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setSelectedFile(null);
+      setFileBase64(null);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Le fichier est trop volumineux (maximum 5 Mo).");
+      e.target.value = "";
+      return;
+    }
+
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFileBase64(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handlePublishAnnouncement = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!annTitle || !annContent) return;
@@ -184,7 +210,12 @@ export default function DashboardStats({
       const response = await fetch("/api/announcements", {
         method: "POST",
         headers,
-        body: JSON.stringify({ title: annTitle, content: annContent })
+        body: JSON.stringify({ 
+          title: annTitle, 
+          content: annContent,
+          fileData: fileBase64,
+          fileName: selectedFile?.name
+        })
       });
 
       const data = await response.json();
@@ -194,6 +225,12 @@ export default function DashboardStats({
 
       setAnnTitle("");
       setAnnContent("");
+      setSelectedFile(null);
+      setFileBase64(null);
+
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+
       setAnnFormSuccess("Communiqué publié avec succès !");
       if (onRefreshAnnouncements) {
         onRefreshAnnouncements();
@@ -667,6 +704,16 @@ export default function DashboardStats({
               />
             </div>
 
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Pièce jointe / Document (Optionnel)</label>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none file:mr-4 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 transition cursor-pointer"
+              />
+              <p className="text-[10px] text-slate-405 mt-1 font-sans">Formats acceptés : PDF, PNG, JPG, DOC (Max: 5 Mo)</p>
+            </div>
+
             <button
               type="submit"
               disabled={annPublishLoading}
@@ -686,6 +733,18 @@ export default function DashboardStats({
                     <div className="space-y-1">
                       <h5 className="font-bold text-slate-800 text-xs">{ann.title}</h5>
                       <p className="text-slate-655 text-[11px] whitespace-pre-wrap leading-relaxed">{ann.content}</p>
+                      {ann.attachment_url && (
+                        <div className="mt-1.5">
+                          <a 
+                            href={ann.attachment_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] text-amber-700 hover:underline font-semibold bg-amber-50 px-2 py-1 rounded"
+                          >
+                            <Paperclip className="h-3 w-3" /> {ann.attachment_name || "Document"}
+                          </a>
+                        </div>
+                      )}
                       <p className="text-[9px] text-slate-400 font-mono">
                         Publié le : {new Date(ann.created_at).toLocaleDateString("fr-FR", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
