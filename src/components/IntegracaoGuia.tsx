@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { 
   HeartHandshake, FileCheck, Phone, ShieldAlert, Award, 
   MapPin, HelpCircle, ArrowRight, ClipboardList, BookOpen,
-  Home, Calendar
+  Home, Calendar, Megaphone
 } from "lucide-react";
 
 interface GuideSection {
@@ -13,7 +13,11 @@ interface GuideSection {
   content: React.ReactNode;
 }
 
-export default function IntegracaoGuia() {
+interface IntegracaoGuiaProps {
+  announcements?: any[];
+}
+
+export default function IntegracaoGuia({ announcements }: IntegracaoGuiaProps) {
   const [activeSection, setActiveSection] = useState("contratos");
 
   const sections: GuideSection[] = [
@@ -254,72 +258,99 @@ export default function IntegracaoGuia() {
   const ActiveSectionIcon = sections.find(s => s.id === activeSection)?.icon || BookOpen;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" id="integration-guide-view">
-      {/* 1. Left Nav list */}
-      <div className="lg:col-span-1 space-y-3">
-        <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-widest font-mono flex items-center gap-1.5">
-            <HeartHandshake className="h-4 w-4 text-[#009E49]" /> Sujets de Survie
+    <div className="space-y-6">
+      {/* Announcements Board */}
+      {announcements && announcements.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3 animate-fade-in shadow-xs">
+          <h3 className="text-xs font-bold text-amber-800 uppercase tracking-widest font-mono flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+            <Megaphone className="h-4 w-4 text-amber-600 shrink-0" />
+            Communiqués Officiels de l'Ambassade
           </h3>
-          <p className="text-xs text-slate-500 mt-1.5 leading-snug">Consultez les guides et étapes officiels pour un séjour sain et légalisé.</p>
-        </div>
-
-        <div className="space-y-2">
-          {sections.map(s => {
-            const Icon = s.icon;
-            const isSel = s.id === activeSection;
-            return (
-              <button
-                key={s.id}
-                id={`guide-tab-${s.id}`}
-                onClick={() => setActiveSection(s.id)}
-                className={`w-full text-left p-4 rounded-xl border transition-all duration-300 flex items-center justify-between cursor-pointer ${
-                  isSel 
-                    ? "bg-slate-50 border-[#CE1126]/30 text-amber-800 shadow-xs"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-slate-350 hover:bg-slate-50"
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg transition-colors ${
-                    isSel ? "bg-[#CE1126]/10 text-[#CE1126]" : "bg-slate-100 text-slate-400"
-                  }`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold leading-tight">{s.title}</h4>
-                    <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">{s.subtitle}</span>
-                  </div>
-                </div>
-                <ArrowRight className={`h-4 w-4 transition-transform ${isSel ? "text-amber-600 translate-x-1" : "text-slate-405"}`} />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 2. Right Expand Panel */}
-      <div className="lg:col-span-2">
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-6 shadow-sm h-full min-h-[400px]">
-          {/* Header */}
-          <div className="border-b border-slate-200 pb-5">
-            <div className="flex items-center space-x-3">
-              <div className="bg-[#CE1126]/10 p-2.5 rounded-xl text-[#CE1126]">
-                <ActiveSectionIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-800 leading-tight">
-                  {sections.find(s => s.id === activeSection)?.title}
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  {sections.find(s => s.id === activeSection)?.subtitle}
+          <div className="space-y-3">
+            {announcements.map((ann) => (
+              <div key={ann.id} className="bg-white border border-amber-200/60 rounded-xl p-4 shadow-2xs">
+                <h4 className="font-bold text-slate-800 text-sm">{ann.title}</h4>
+                <p className="text-slate-655 text-xs mt-1.5 whitespace-pre-wrap leading-relaxed">{ann.content}</p>
+                <p className="text-[10px] text-slate-400 mt-2 font-mono">
+                  Publié le : {new Date(ann.created_at).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" id="integration-guide-view">
+        {/* 1. Left Nav list */}
+        <div className="lg:col-span-1 space-y-3">
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-widest font-mono flex items-center gap-1.5">
+              <HeartHandshake className="h-4 w-4 text-[#009E49]" /> Sujets de Survie
+            </h3>
+            <p className="text-xs text-slate-550 mt-1.5 leading-snug">Consultez les guides et étapes officiels pour un séjour sain et légalisé.</p>
           </div>
 
-          {/* Body content */}
-          <div className="animate-fade-in-slide">
-            {sections.find(s => s.id === activeSection)?.content}
+          <div className="space-y-2">
+            {sections.map(s => {
+              const Icon = s.icon;
+              const isSel = s.id === activeSection;
+              return (
+                <button
+                  key={s.id}
+                  id={`guide-tab-${s.id}`}
+                  onClick={() => setActiveSection(s.id)}
+                  className={`w-full text-left p-4 rounded-xl border transition-all duration-300 flex items-center justify-between cursor-pointer ${
+                    isSel 
+                      ? "bg-slate-50 border-[#CE1126]/30 text-amber-800 shadow-xs"
+                      : "bg-white border-slate-200 text-slate-600 hover:border-slate-350 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-lg transition-colors ${
+                      isSel ? "bg-[#CE1126]/10 text-[#CE1126]" : "bg-slate-100 text-slate-400"
+                    }`}>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold leading-tight">{s.title}</h4>
+                      <span className="text-[10px] text-slate-400 block leading-tight mt-0.5">{s.subtitle}</span>
+                    </div>
+                  </div>
+                  <ArrowRight className={`h-4 w-4 transition-transform ${isSel ? "text-amber-600 translate-x-1" : "text-slate-405"}`} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 2. Right Expand Panel */}
+        <div className="lg:col-span-2">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-6 shadow-sm h-full min-h-[400px]">
+            {/* Header */}
+            <div className="border-b border-slate-200 pb-5">
+              <div className="flex items-center space-x-3">
+                <div className="bg-[#CE1126]/10 p-2.5 rounded-xl text-[#CE1126]">
+                  <ActiveSectionIcon className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-800 leading-tight">
+                    {sections.find(s => s.id === activeSection)?.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {sections.find(s => s.id === activeSection)?.subtitle}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Body content */}
+            <div className="animate-fade-in-slide">
+              {sections.find(s => s.id === activeSection)?.content}
+            </div>
           </div>
         </div>
       </div>

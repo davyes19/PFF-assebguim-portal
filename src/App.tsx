@@ -186,13 +186,13 @@ export default function App() {
           <div className="w-full h-full">
             {activeTab === "census" && (
               <div className="transition-opacity duration-300 animate-fade-in">
-                <CensusForm onSuccess={loadDatabaseData} announcements={announcements} />
+                <CensusForm onSuccess={loadDatabaseData} />
               </div>
             )}
 
             {activeTab === "guide" && (
               <div className="transition-opacity duration-300 animate-fade-in">
-                <IntegracaoGuia />
+                <IntegracaoGuia announcements={announcements} />
               </div>
             )}
 

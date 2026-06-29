@@ -3,10 +3,9 @@ import { User, GraduationCap, Fingerprint, ArrowRight, ArrowLeft, CheckCircle2, 
 
 interface CensusFormProps {
   onSuccess: () => void; // Reload data in parent/admin if needed
-  announcements?: any[];
 }
 
-export default function CensusForm({ onSuccess, announcements }: CensusFormProps) {
+export default function CensusForm({ onSuccess }: CensusFormProps) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -201,30 +200,6 @@ export default function CensusForm({ onSuccess, announcements }: CensusFormProps
           Étape {step} sur 3
         </div>
       </div>
-
-      {/* Announcements Board */}
-      {announcements && announcements.length > 0 && (
-        <div className="bg-amber-50 border-b border-amber-200 p-5 space-y-3">
-          <h3 className="text-xs font-bold text-amber-800 uppercase tracking-widest font-mono flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            </span>
-            Communiqués Officiels de l'Ambassade
-          </h3>
-          <div className="space-y-3">
-            {announcements.map((ann) => (
-              <div key={ann.id} className="bg-white border border-amber-200/60 rounded-xl p-4 shadow-2xs">
-                <h4 className="font-bold text-slate-800 text-sm">{ann.title}</h4>
-                <p className="text-slate-600 text-xs mt-1.5 whitespace-pre-wrap leading-relaxed">{ann.content}</p>
-                <p className="text-[10px] text-slate-400 mt-2 font-mono">
-                  Publié le : {new Date(ann.created_at).toLocaleDateString("fr-FR", { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Modern Stepper Indicator */}
       <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-200 flex justify-between items-center overflow-x-auto gap-4 scrollbar-none">
