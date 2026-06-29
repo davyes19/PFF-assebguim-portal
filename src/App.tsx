@@ -134,6 +134,11 @@ export default function App() {
     setActiveTab("dashboard"); // Auto switch to management
   };
 
+  const handleUpdateAdminToken = (newToken: string) => {
+    localStorage.setItem("admin_token", newToken);
+    setAdminToken(newToken);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     setAdminToken(null);
@@ -216,6 +221,7 @@ export default function App() {
                   onRefresh={loadDatabaseData} 
                   announcements={announcements}
                   onRefreshAnnouncements={loadAnnouncements}
+                  onUpdateAdminToken={handleUpdateAdminToken}
                 />
               </div>
             )}

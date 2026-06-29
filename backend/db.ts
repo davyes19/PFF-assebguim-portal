@@ -124,6 +124,23 @@ class Database {
     return true;
   }
 
+  async getAdminPassword(): Promise<string> {
+    try {
+      const { data, error } = await supabase.from('admin_settings').select('value').eq('id', 'password').maybeSingle();
+      if (error || !data) {
+        return process.env.ADMIN_PASSWORD || "asegbm2026";
+      }
+      return data.value;
+    } catch {
+      return process.env.ADMIN_PASSWORD || "asegbm2026";
+    }
+  }
+
+  async setAdminPassword(newPassword: string): Promise<void> {
+    const { error } = await supabase.from('admin_settings').upsert({ id: 'password', value: newPassword });
+    if (error) throw new Error(error.message);
+  }
+
   async ping(): Promise<boolean> {
     const { data, error } = await supabase.from('support_tickets').select('id').limit(1);
     if (error) throw new Error(error.message);

@@ -7,7 +7,7 @@ import {
 import { 
   Users, Award, HelpCircle, Search, MapPin, Calendar, 
   GraduationCap, Download, RefreshCw, Eye, EyeOff, CheckCircle, Clock, AlertTriangle, ShieldCheck, Edit, X,
-  Megaphone, Trash2
+  Megaphone, Trash2, Lock
 } from "lucide-react";
 
 interface DashboardStatsProps {
@@ -17,6 +17,7 @@ interface DashboardStatsProps {
   onRefresh: () => void;
   announcements?: any[];
   onRefreshAnnouncements?: () => void;
+  onUpdateAdminToken?: (token: string) => void;
 }
 
 const formatDate = (dateStr: string) => {
@@ -56,6 +57,15 @@ export default function DashboardStats({
   const [annPublishLoading, setAnnPublishLoading] = useState(false);
   const [annFormError, setAnnFormError] = useState<string | null>(null);
   const [annFormSuccess, setAnnFormSuccess] = useState<string | null>(null);
+
+  // Change Password States
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwError, setPwError] = useState<string | null>(null);
+  const [pwSuccess, setPwSuccess] = useState<string | null>(null);
 
   const editCities = [
     "Agadir", "Al Hoceima", "Asilah", "Béni Mellal", "Berkane", "Berrechid", "Boujdour", 
@@ -220,6 +230,49 @@ export default function DashboardStats({
       }
     } catch (err: any) {
       alert(err.message || "Erreur de conexão.");
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPw.trim().length < 4) {
+      setPwError("Le nouveau mot de passe doit comporter au moins 4 caractères.");
+      setPwSuccess(null);
+      return;
+    }
+
+    setPwLoading(true);
+    setPwError(null);
+    setPwSuccess(null);
+
+    try {
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (adminToken) {
+        headers["Authorization"] = adminToken;
+      }
+
+      const response = await fetch("/api/admin/change-password", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ currentPassword: currentPw, newPassword: newPw })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue.");
+      }
+
+      setPwSuccess("Mot de passe mis à jour avec succès !");
+      setCurrentPw("");
+      setNewPw("");
+      
+      if (onUpdateAdminToken && data.token) {
+        onUpdateAdminToken(data.token);
+      }
+    } catch (err: any) {
+      setPwError(err.message || "Erreur de connexion.");
+    } finally {
+      setPwLoading(false);
     }
   };
 
@@ -655,6 +708,82 @@ export default function DashboardStats({
             )}
           </div>
         </div>
+      </div>
+
+      {/* Change Password Section */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm animate-fade-in">
+        <div className="border-b border-slate-200 pb-4 mb-5 flex items-center justify-between">
+          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 font-sans">
+            <Lock className="h-4 w-4 text-slate-500 animate-pulse" />
+            Sécurité du Portail (Changer le mot de passe admin)
+          </h3>
+        </div>
+
+        <form onSubmit={handleChangePassword} className="max-w-2xl space-y-4">
+          {pwError && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-2.5 rounded-xl text-[11px] font-sans">
+              {pwError}
+            </div>
+          )}
+          
+          {pwSuccess && (
+            <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 p-2.5 rounded-xl text-[11px] font-sans">
+              {pwSuccess}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Mot de passe actuel</label>
+              <div className="relative">
+                <input
+                  type={showCurrentPw ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={currentPw}
+                  onChange={(e) => setCurrentPw(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition animate-fade-in"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPw(!showCurrentPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 focus:outline-none cursor-pointer"
+                >
+                  {showCurrentPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 mb-1">Nouveau mot de passe</label>
+              <div className="relative">
+                <input
+                  type={showNewPw ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={newPw}
+                  onChange={(e) => setNewPw(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition animate-fade-in"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPw(!showNewPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-655 focus:outline-none cursor-pointer"
+                >
+                  {showNewPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={pwLoading}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition duration-300 transform active:scale-95 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+          >
+            {pwLoading ? "Mise à jour..." : "Enregistrer le mot de passe"}
+          </button>
+        </form>
       </div>
 
       {/* Search Tracker & Students Database Table */}

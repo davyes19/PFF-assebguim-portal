@@ -8,32 +8,69 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const verifyAdmin = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const verifyAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
     return res.status(401).json({ error: "Accès refusé. Token manquant." });
   }
   const token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
-  const adminPass = process.env.ADMIN_PASSWORD || "asegbm2026";
-  if (token === adminPass) {
-    return next();
+  try {
+    const adminPass = await db.getAdminPassword();
+    if (token === adminPass) {
+      return next();
+    }
+  } catch (err) {
+    const adminPass = process.env.ADMIN_PASSWORD || "asegbm2026";
+    if (token === adminPass) {
+      return next();
+    }
   }
   return res.status(401).json({ error: "Accès refusé. Token invalide." });
 };
 
 // POST /api/admin/login - Authenticate admin credentials
-app.post("/api/admin/login", (req, res) => {
+app.post("/api/admin/login", async (req, res) => {
   const { username, password } = req.body;
   const adminUser = process.env.ADMIN_USER || "admin";
-  const adminPass = process.env.ADMIN_PASSWORD || "asegbm2026";
 
-  if (
-    (username === adminUser || username === "admin@asegbm.org") &&
-    password === adminPass
-  ) {
-    return res.json({ success: true, token: `Bearer ${adminPass}` });
+  try {
+    const adminPass = await db.getAdminPassword();
+    if (
+      (username === adminUser || username === "admin@asegbm.org") &&
+      password === adminPass
+    ) {
+      return res.json({ success: true, token: `Bearer ${adminPass}` });
+    }
+  } catch (err) {
+    const adminPass = process.env.ADMIN_PASSWORD || "asegbm2026";
+    if (
+      (username === adminUser || username === "admin@asegbm.org") &&
+      password === adminPass
+    ) {
+      return res.json({ success: true, token: `Bearer ${adminPass}` });
+    }
   }
   return res.status(401).json({ error: "Identifiants invalides." });
+});
+
+// POST /api/admin/change-password - Change admin password dynamically
+app.post("/api/admin/change-password", verifyAdmin, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!newPassword || newPassword.trim().length < 4) {
+    return res.status(400).json({ error: "Le nouveau mot de passe doit comporter au moins 4 caractères." });
+  }
+
+  try {
+    const adminPass = await db.getAdminPassword();
+    if (currentPassword !== adminPass) {
+      return res.status(400).json({ error: "Le mot de passe actuel émis est incorrect." });
+    }
+
+    await db.setAdminPassword(newPassword);
+    return res.json({ success: true, token: `Bearer ${newPassword}` });
+  } catch (err: any) {
+    return res.status(500).json({ error: "Erreur lors de la mise à jour du mot de passe : " + err.message });
+  }
 });
 
 // GET /api/students - Get all mapped students (Admin only view, protected)
