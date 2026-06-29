@@ -179,8 +179,8 @@ export default function DashboardStats({
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Le fichier est trop volumineux (maximum 5 Mo).");
+    if (file.size > 4 * 1024 * 1024) {
+      alert("Le fichier est trop volumineux (maximum 4 Mo pour Vercel).");
       e.target.value = "";
       return;
     }
@@ -711,7 +711,7 @@ export default function DashboardStats({
                 onChange={handleFileChange}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none file:mr-4 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 transition cursor-pointer"
               />
-              <p className="text-[10px] text-slate-405 mt-1 font-sans">Formats acceptés : PDF, PNG, JPG, DOC (Max: 5 Mo)</p>
+              <p className="text-[10px] text-slate-405 mt-1 font-sans">Formats acceptés : PDF, PNG, JPG, DOC (Max: 4 Mo)</p>
             </div>
 
             <button
@@ -801,6 +801,7 @@ export default function DashboardStats({
                   value={currentPw}
                   onChange={(e) => setCurrentPw(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition animate-fade-in"
+                  autoComplete="current-password"
                   required
                 />
                 <button
@@ -822,6 +823,7 @@ export default function DashboardStats({
                   value={newPw}
                   onChange={(e) => setNewPw(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-10 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition animate-fade-in"
+                  autoComplete="new-password"
                   required
                 />
                 <button

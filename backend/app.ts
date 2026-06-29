@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 const verifyAdmin = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const authHeader = req.headers['authorization'];
