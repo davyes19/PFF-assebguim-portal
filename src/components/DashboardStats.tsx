@@ -39,7 +39,8 @@ export default function DashboardStats({
   adminToken, 
   onRefresh,
   announcements,
-  onRefreshAnnouncements
+  onRefreshAnnouncements,
+  onUpdateAdminToken
 }: DashboardStatsProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterYear, setFilterYear] = useState<string>("All");
