@@ -135,7 +135,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
           <div>
             <span className="bg-[#CE1126]/10 text-[#CE1126] font-bold px-2 py-1 rounded font-mono text-[10px] uppercase">HELPDESK</span>
             <h3 className="text-base sm:text-lg font-bold text-slate-800 mt-2 flex items-center gap-1.5">
-              <LifeBuoy className="h-5 w-5 text-yellow-500 shrink-0" /> Requêtes aux Services
+              <LifeBuoy className="h-5 w-5 text-yellow-500 shrink-0" /> Demande d'assistance
             </h3>
             <p className="text-slate-500 mt-1">Notre direction analysera votre cas dans un délai de 48 heures maximum.</p>
           </div>
@@ -145,10 +145,14 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
             <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold text-amber-900">Avis aux Étudiants :</p>
-              <p className="mt-0.5 text-slate-655 font-normal leading-relaxed">
-                Les services consulaires de l'Ambassade analyseront votre demande avec toute l'attention requise. 
-                <strong> Il est inutile de soumettre plusieurs requêtes ou d'envoyer d'autres tickets pour le même sujet.</strong> 
-                L'Ambassade vous contactera directement si nécessaire.
+              <p className="mt-0.5 text-slate-655 font-normal leading-relaxed whitespace-pre-line">
+                La rubrique {"<<Demande d'assistance>>"} du portail est reservee aux situations serieuses et importantes. Les demandes seront examinees par l'Ambassade, et seules celles juguees justifiees et prioritaires seront traitees.
+                {"\n\n"}
+                Nous vous prions de ne pas soumettre de demandes inutiles ou repetitives.
+                {"\n\n"}
+                Les etudiants concernes seront contaactes directement si leur demande est retenue.
+                {"\n\n"}
+                Merci de votre comprehension.
               </p>
             </div>
           </div>
