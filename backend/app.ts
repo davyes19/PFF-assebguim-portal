@@ -185,7 +185,7 @@ app.get("/api/tickets", verifyAdmin, async (req, res) => {
 // POST /api/tickets - Submit support ticket (Student)
 app.post("/api/tickets", async (req, res) => {
   try {
-    const { category, description, studentName, email } = req.body;
+    const { category, description, studentName, email, phone } = req.body;
 
     if (!category || !description || !studentName || !email) {
       return res.status(400).json({ error: "Champs obligatoires manquants pour enregistrer le ticket." });
@@ -195,7 +195,8 @@ app.post("/api/tickets", async (req, res) => {
       category,
       description,
       studentName,
-      email
+      email,
+      phone
     });
 
     res.status(201).json({

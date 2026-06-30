@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { SupportTicket } from "../../backend/db";
 import {
   LifeBuoy, Calendar, Clock, AlertCircle, CheckCircle,
-  Send, User, ClipboardList, Info, HelpCircle
+  Send, User, ClipboardList, Info, HelpCircle, Phone
 } from "lucide-react";
 
 interface SupportPortalProps {
@@ -21,6 +21,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
   const [ticketForm, setTicketForm] = useState({
     studentName: "",
     email: "etudiant@ambassade-guineebissau.org",
+    phone: "",
     category: "Bourse d'études / AMCI",
     description: ""
   });
@@ -67,6 +68,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
       setTicketForm({
         studentName: "",
         email: "etudiant@ambassade-guineebissau.org",
+        phone: "",
         category: "Bourse d'études / AMCI",
         description: ""
       });
@@ -183,6 +185,21 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
             </div>
 
             <div>
+              <label className="block text-slate-655 font-bold mb-1.5">Votre Numéro de Téléphone (Optionnel)</label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Ex: +212 600-000000"
+                  value={ticketForm.phone}
+                  onChange={handleInputChange}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition animate-fade-in"
+                />
+              </div>
+            </div>
+
+            <div>
               <label className="block text-slate-650 font-bold mb-1.5">Urgence / Catégorie *</label>
               <select
                 name="category"
@@ -267,9 +284,14 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
                   </p>
 
                   <div className="border-t border-slate-200 pt-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] font-sans">
-                    <p className="text-slate-500 flex items-center gap-1.5">
+                    <p className="text-slate-500 flex items-center gap-1.5 flex-wrap">
                       <span className="font-semibold text-slate-700">Étudiant :</span> {tk.studentName}
                       <span className="text-slate-400 font-mono">({tk.email})</span>
+                      {tk.phone && (
+                        <span className="text-amber-800 font-mono bg-amber-50 border border-amber-100/50 px-1.5 py-0.5 rounded text-[10px] font-semibold animate-fade-in">
+                          Tel: {tk.phone}
+                        </span>
+                      )}
                     </p>
 
                     {/* Admin rapid management options */}

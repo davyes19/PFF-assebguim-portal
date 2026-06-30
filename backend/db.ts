@@ -44,6 +44,7 @@ export interface SupportTicket {
   description: string;
   studentName: string;
   email: string;
+  phone?: string | null;
   status: 'Pendente' | 'Em Resolução' | 'Resolvido';
   createdAt: string;
 }
