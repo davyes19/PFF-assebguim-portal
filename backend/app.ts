@@ -229,6 +229,20 @@ app.patch("/api/tickets/:id", verifyAdmin, async (req, res) => {
     res.status(500).json({ error: "Erreur lors de la mise à jour do statut du ticket : " + e.message });
   }
 });
+
+// DELETE /api/tickets/:id - Delete support ticket permanently (Admin)
+app.delete("/api/tickets/:id", verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await db.deleteTicket(id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Ticket de support introuvable." });
+    }
+    res.json({ success: true, message: "Ticket supprimé définitivement !" });
+  } catch (e: any) {
+    res.status(500).json({ error: "Erreur lors de la suppression du ticket : " + e.message });
+  }
+});
 // GET /api/announcements - Get all active announcements (Public)
 app.get("/api/announcements", async (req, res) => {
   try {

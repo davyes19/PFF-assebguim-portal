@@ -97,6 +97,12 @@ class Database {
     return data;
   }
 
+  async deleteTicket(id: string): Promise<boolean> {
+    const { error } = await supabase.from('support_tickets').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    return true;
+  }
+
   async updateStudent(id: string, studentData: Partial<Omit<Student, 'id'>>): Promise<Student | null> {
     const { data, error } = await supabase.from('students').update(studentData).eq('id', id).select().single();
     if (error) throw new Error(error.message);
