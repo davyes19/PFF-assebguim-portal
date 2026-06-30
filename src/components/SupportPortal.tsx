@@ -28,8 +28,6 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
 
   const categories = [
     "Bourse d'études / AMCI",
-    "Carte Consulaire / Documents",
-    "Passeport / Visas",
     "Santé / Assurance AMCI",
     "Urgence Consulaire",
     "Autre demande"
@@ -146,7 +144,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
             <div>
               <p className="font-bold text-amber-900">Avis aux Étudiants :</p>
               <p className="mt-0.5 text-slate-655 font-normal leading-relaxed whitespace-pre-line">
-                La rubrique « Demande d'assistance » du portail est réservée aux situations sérieuses et importantes. Les demandes seront examinées par l'Ambassade, et seules celles jugées justifiées et prioritaires seront traitées.
+                La rubrique « Demande d'assistance » est réservée aux situations sérieuses et importantes. Les demandes seront examinées par l'Ambassade, et seules celles jugées justifiées et prioritaires seront traitées.
                 {"\n\n"}
                 Nous vous prions de ne pas soumettre de demandes inutiles ou répétitives.
                 {"\n\n"}
