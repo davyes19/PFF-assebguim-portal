@@ -29,7 +29,6 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
     "Bourse d'études / AMCI",
     "Carte Consulaire / Documents",
     "Passeport / Visas",
-    "Logement & Colocation",
     "Santé / Assurance AMCI",
     "Urgence Consulaire",
     "Autre demande"
