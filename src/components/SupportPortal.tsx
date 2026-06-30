@@ -21,16 +21,18 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
   const [ticketForm, setTicketForm] = useState({
     studentName: "",
     email: "etudiant@ambassade-guineebissau.org",
-    category: "Documentation",
+    category: "Bourse d'études / AMCI",
     description: ""
   });
 
   const categories = [
-    "Académie",
-    "Logement",
-    "Santé",
-    "Documentation",
-    "Autre"
+    "Bourse d'études / AMCI",
+    "Carte Consulaire / Documents",
+    "Passeport / Visas",
+    "Logement & Colocation",
+    "Santé / Assurance AMCI",
+    "Urgence Consulaire",
+    "Autre demande"
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -66,7 +68,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
       setTicketForm({
         studentName: "",
         email: "etudiant@ambassade-guineebissau.org",
-        category: "Documentation",
+        category: "Bourse d'études / AMCI",
         description: ""
       });
       onRefresh(); // Trigger parent stats reload
@@ -135,6 +137,19 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
               <LifeBuoy className="h-5 w-5 text-yellow-500 shrink-0" /> Requêtes aux Services
             </h3>
             <p className="text-slate-500 mt-1">Notre direction analysera votre cas dans un délai de 48 heures maximum.</p>
+          </div>
+
+          {/* Advice notice for students */}
+          <div className="bg-amber-50/70 border border-amber-250/30 rounded-xl p-4 flex gap-3 text-xs leading-relaxed text-amber-900 font-sans animate-fade-in shadow-2xs">
+            <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-amber-900">Avis aux Étudiants :</p>
+              <p className="mt-0.5 text-slate-655 font-normal leading-relaxed">
+                Les services consulaires de l'Ambassade analyseront votre demande avec toute l'attention requise. 
+                <strong> Il est inutile de soumettre plusieurs requêtes ou d'envoyer d'autres tickets pour le même sujet.</strong> 
+                L'Ambassade vous contactera directement si nécessaire.
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 font-sans text-xs">
@@ -238,7 +253,7 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                     <div className="flex items-center space-x-2.5">
                       <span className="bg-slate-100 border border-slate-200 text-[10px] font-mono font-bold text-amber-700 px-2 py-0.5 rounded uppercase">
-                        {tk.category === "Academia" ? "Académie" : tk.category === "Residência" ? "Logement" : tk.category === "Saúde" ? "Santé" : tk.category === "Documentação" ? "Documentation" : tk.category}
+                        {tk.category}
                       </span>
                       <span className="text-slate-400 text-[10px] font-mono">
                         {new Date(tk.createdAt).toLocaleString("fr-FR", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
