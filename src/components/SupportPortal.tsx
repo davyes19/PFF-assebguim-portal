@@ -146,13 +146,13 @@ export default function SupportPortal({ tickets, isAdmin, adminToken, onRefresh 
             <div>
               <p className="font-bold text-amber-900">Avis aux Étudiants :</p>
               <p className="mt-0.5 text-slate-655 font-normal leading-relaxed whitespace-pre-line">
-                La rubrique {"<<Demande d'assistance>>"} du portail est reservee aux situations serieuses et importantes. Les demandes seront examinees par l'Ambassade, et seules celles juguees justifiees et prioritaires seront traitees.
+                La rubrique « Demande d'assistance » du portail est réservée aux situations sérieuses et importantes. Les demandes seront examinées par l'Ambassade, et seules celles jugées justifiées et prioritaires seront traitées.
                 {"\n\n"}
-                Nous vous prions de ne pas soumettre de demandes inutiles ou repetitives.
+                Nous vous prions de ne pas soumettre de demandes inutiles ou répétitives.
                 {"\n\n"}
-                Les etudiants concernes seront contaactes directement si leur demande est retenue.
+                Les étudiants concernés seront contactés directement si leur demande est retenue.
                 {"\n\n"}
-                Merci de votre comprehension.
+                Merci de votre compréhension.
               </p>
             </div>
           </div>
